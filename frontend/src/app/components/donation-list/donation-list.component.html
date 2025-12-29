@@ -1,0 +1,132 @@
+<div class="donation-list-container">
+  <div class="header-section">
+    <h1>Available Donations</h1>
+    <p>Browse and contribute to donation requests from verified NGOs</p>
+  </div>
+
+  <!-- Filters Section -->
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>Filter Donations</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="filters-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Donation Type</mat-label>
+          <mat-select [(value)]="filters.donation_type">
+            <mat-option value="">All Types</mat-option>
+            <mat-option *ngFor="let type of donationTypes" [value]="type">
+              {{type | titlecase}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Location</mat-label>
+          <input matInput [(ngModel)]="filters.location" placeholder="Enter location">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select [(value)]="filters.status">
+            <mat-option value="">All Statuses</mat-option>
+            <mat-option *ngFor="let status of statuses" [value]="status">
+              {{status}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>From Date</mat-label>
+          <input matInput type="date" [(ngModel)]="filters.date_from">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>To Date</mat-label>
+          <input matInput type="date" [(ngModel)]="filters.date_to">
+        </mat-form-field>
+
+        <div class="filter-actions">
+          <button mat-raised-button color="primary" (click)="applyFilters()">
+            <mat-icon>search</mat-icon>
+            Apply Filters
+          </button>
+          <button mat-stroked-button (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Clear
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+    <p>Loading donations...</p>
+  </div>
+
+  <!-- Donations List -->
+  <div class="donations-grid" *ngIf="!isLoading">
+    <!-- No Donations -->
+    <div class="no-donations" *ngIf="filteredDonations.length === 0">
+      <mat-icon>inventory_2</mat-icon>
+      <h3>No donations found</h3>
+      <p>Try adjusting your filters or check back later</p>
+    </div>
+
+    <!-- Donation Cards -->
+    <mat-card class="donation-card" *ngFor="let donation of filteredDonations">
+      <mat-card-header>
+        <div mat-card-avatar class="donation-avatar">
+          <mat-icon>{{getDonationTypeIcon(donation.donation_type)}}</mat-icon>
+        </div>
+        <mat-card-title>{{donation.donation_type | titlecase}}</mat-card-title>
+        <mat-card-subtitle>{{donation.ngo_name}}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="donation-info">
+          <p class="quantity">
+            <strong>Quantity/Amount:</strong> {{donation.quantity_or_amount}}
+            <span *ngIf="donation.donation_type === 'funds'">$</span>
+          </p>
+          <p class="location">
+            <mat-icon>location_on</mat-icon>
+            {{donation.location}}
+          </p>
+          <p class="pickup-time">
+            <mat-icon>schedule</mat-icon>
+            Pickup: {{formatDate(donation.pickup_date_time)}}
+          </p>
+          <p class="description" *ngIf="donation.description">
+            {{donation.description}}
+          </p>
+        </div>
+
+        <div class="donation-meta">
+          <mat-chip-listbox>
+            <mat-chip-option [color]="getStatusColor(donation.status)">
+              {{donation.status}}
+            </mat-chip-option>
+            <mat-chip-option *ngIf="donation.priority" color="accent">
+              Priority: {{donation.priority}}
+            </mat-chip-option>
+          </mat-chip-listbox>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="viewDonationDetails(donation.id)">
+          <mat-icon>visibility</mat-icon>
+          View Details
+        </button>
+        <button mat-stroked-button color="accent" (click)="contributeToDonation(donation.id)"
+                [disabled]="donation.status === 'Completed' || donation.status === 'Cancelled'">
+          <mat-icon>volunteer_activism</mat-icon>
+          Contribute
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

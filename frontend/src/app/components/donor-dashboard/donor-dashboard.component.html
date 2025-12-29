@@ -1,0 +1,90 @@
+<div class="donor-dashboard-container">
+  <div class="header-section">
+    <h1>Donor Dashboard</h1>
+    <button mat-raised-button color="primary" (click)="browseDonations()">
+      <mat-icon>search</mat-icon>
+      Browse Donations
+    </button>
+  </div>
+
+  <div class="stats-section">
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-card-title>Total Contributions</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalContributions }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-card-title>Total Amount</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ formatCurrency(stats.totalAmount) }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-card-title>Pending</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.pendingContributions }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-card-title>Completed</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-value">{{ stats.completedContributions }}</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="contributions-section">
+    <h2>My Contributions</h2>
+    
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading contributions...</p>
+    </div>
+
+    <div *ngIf="!isLoading && myContributions.length === 0" class="empty-state">
+      <mat-icon>inbox</mat-icon>
+      <p>No contributions yet. Start by browsing available donations!</p>
+      <button mat-raised-button color="primary" (click)="browseDonations()">
+        Browse Donations
+      </button>
+    </div>
+
+    <mat-card *ngFor="let contribution of myContributions" class="contribution-card">
+      <mat-card-header>
+        <div mat-card-avatar class="contribution-avatar">
+          <mat-icon>volunteer_activism</mat-icon>
+        </div>
+        <mat-card-title>{{ contribution.donation_title }}</mat-card-title>
+        <mat-card-subtitle>{{ contribution.ngo_name }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="contribution-details">
+          <p><strong>Amount:</strong> {{ formatCurrency(contribution.contribution_amount) }}</p>
+          <p><strong>Date:</strong> {{ formatDate(contribution.contribution_date || contribution.created_at) }}</p>
+          <p><strong>Status:</strong> 
+            <mat-chip [color]="getStatusColor(contribution.status)">
+              {{ contribution.status }}
+            </mat-chip>
+          </p>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="viewDonationDetails(contribution.donation_id)">
+          View Donation
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

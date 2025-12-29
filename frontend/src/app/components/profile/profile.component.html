@@ -1,0 +1,139 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <mat-card class="profile-card">
+      <mat-card-header>
+        <div mat-card-avatar class="profile-avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+        <mat-card-title>{{currentUser?.name || 'John Doe'}}</mat-card-title>
+        <mat-card-subtitle>{{currentUser?.email || 'john.doe@example.com'}}</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="profile-stats">
+          <div class="stat-card">
+            <mat-icon class="stat-icon">volunteer_activism</mat-icon>
+            <div class="stat-content">
+              <div class="stat-number">{{userStats.totalContributions}}</div>
+              <div class="stat-label">Contributions</div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <mat-icon class="stat-icon">attach_money</mat-icon>
+            <div class="stat-content">
+              <div class="stat-number">{{formatCurrency(userStats.totalAmount)}}</div>
+              <div class="stat-label">Total Donated</div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <mat-icon class="stat-icon">emoji_events</mat-icon>
+            <div class="stat-content">
+              <div class="stat-number">#{{userStats.rank}}</div>
+              <div class="stat-label">Rank</div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="profile-content">
+    <div class="info-section">
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>Personal Information</mat-card-title>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="info-grid">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Full Name</mat-label>
+              <input matInput [(ngModel)]="editProfileForm.name" [readonly]="!isEditingProfile">
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email Address</mat-label>
+              <input matInput [value]="editProfileForm.email" readonly>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Role</mat-label>
+              <input matInput [value]="currentUser?.role || 'Donor'" readonly>
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Member Since</mat-label>
+              <input matInput [(ngModel)]="editProfileForm.memberSince" [readonly]="!isEditingProfile">
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Phone Number</mat-label>
+              <input matInput [(ngModel)]="editProfileForm.phone" [readonly]="!isEditingProfile">
+            </mat-form-field>
+            
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Location</mat-label>
+              <input matInput [(ngModel)]="editProfileForm.location" [readonly]="!isEditingProfile">
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+        
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="editProfile()" *ngIf="!isEditingProfile">
+            <mat-icon>edit</mat-icon>
+            Edit Profile
+          </button>
+          <button mat-raised-button color="primary" (click)="editProfile()" *ngIf="isEditingProfile">
+            <mat-icon>save</mat-icon>
+            Save Changes
+          </button>
+          <button mat-stroked-button color="accent" (click)="cancelEdit()" *ngIf="isEditingProfile">
+            <mat-icon>cancel</mat-icon>
+            Cancel
+          </button>
+          <button mat-stroked-button color="warn" (click)="changePassword()">
+            <mat-icon>lock</mat-icon>
+            Change Password
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <div class="activity-section">
+      <mat-card class="activity-card">
+        <mat-card-header>
+          <mat-card-title>Recent Activity</mat-card-title>
+          <button mat-icon-button (click)="viewAllActivity()">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="activity-list">
+            <div class="activity-item" *ngFor="let activity of recentActivities">
+              <div class="activity-icon">
+                <mat-icon>{{getActivityIcon(activity.type)}}</mat-icon>
+              </div>
+              <div class="activity-details">
+                <div class="activity-title">{{activity.title}}</div>
+                <div class="activity-description">{{activity.description}}</div>
+                <div class="activity-time">{{formatDate(activity.timestamp)}}</div>
+              </div>
+              <div class="activity-amount" *ngIf="activity.amount">
+                {{formatCurrency(activity.amount)}}
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+        
+        <mat-card-actions>
+          <button mat-stroked-button color="primary" (click)="viewAllActivity()">
+            View All Activity
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

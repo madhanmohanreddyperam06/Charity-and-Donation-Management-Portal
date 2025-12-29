@@ -1,0 +1,63 @@
+<div class="leaderboard-container">
+  <div class="header-section">
+    <h1>Donor Leaderboard</h1>
+    <button mat-raised-button color="primary" (click)="browseDonations()">
+      <mat-icon>search</mat-icon>
+      Browse Donations
+    </button>
+  </div>
+
+  <div class="period-selector">
+    <mat-form-field appearance="outline">
+      <mat-label>Time Period</mat-label>
+      <mat-select [(value)]="selectedPeriod" (selectionChange)="onPeriodChange()">
+        <mat-option value="all">All Time</mat-option>
+        <mat-option value="year">This Year</mat-option>
+        <mat-option value="month">This Month</mat-option>
+        <mat-option value="week">This Week</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading leaderboard...</p>
+  </div>
+
+  <div class="leaderboard-list" *ngIf="!isLoading">
+    <mat-card *ngFor="let donor of topDonors" class="leaderboard-card" [class.top-three]="donor.rank <= 3">
+      <mat-card-header>
+        <div mat-card-avatar class="rank-avatar" [ngClass]="'rank-' + donor.rank">
+          <mat-icon>{{ getRankIcon(donor.rank) }}</mat-icon>
+        </div>
+        <mat-card-title>
+          <span class="rank-number">#{{ donor.rank }}</span>
+          {{ donor.name }}
+        </mat-card-title>
+        <mat-card-subtitle>{{ donor.email }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="donor-stats">
+          <div class="stat-item">
+            <mat-icon>volunteer_activism</mat-icon>
+            <span class="stat-label">Contributions:</span>
+            <span class="stat-value">{{ donor.totalContributions }}</span>
+          </div>
+          <div class="stat-item">
+            <mat-icon>attach_money</mat-icon>
+            <span class="stat-label">Total Amount:</span>
+            <span class="stat-value">{{ formatCurrency(donor.totalAmount) }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="empty-state" *ngIf="!isLoading && topDonors.length === 0">
+    <mat-icon>emoji_events</mat-icon>
+    <p>No donors found. Be the first to contribute!</p>
+    <button mat-raised-button color="primary" (click)="browseDonations()">
+      Browse Donations
+    </button>
+  </div>
+</div>

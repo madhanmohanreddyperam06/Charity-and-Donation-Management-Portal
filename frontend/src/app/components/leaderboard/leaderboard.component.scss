@@ -1,0 +1,164 @@
+.leaderboard-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  
+  h1 {
+    color: #333;
+    margin: 0;
+  }
+}
+
+.period-selector {
+  margin-bottom: 24px;
+  
+  mat-form-field {
+    width: 200px;
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px;
+  
+  p {
+    margin-top: 20px;
+    color: #666;
+  }
+}
+
+.leaderboard-list {
+  .leaderboard-card {
+    margin-bottom: 16px;
+    transition: transform 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    &.top-three {
+      border-left: 4px solid #ffd700;
+      background: linear-gradient(to right, rgba(255, 215, 0, 0.1), transparent);
+    }
+    
+    .rank-avatar {
+      &.rank-1 {
+        background: linear-gradient(135deg, #ffd700, #ffed4e);
+        
+        mat-icon {
+          color: #333;
+        }
+      }
+      
+      &.rank-2 {
+        background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+        
+        mat-icon {
+          color: #333;
+        }
+      }
+      
+      &.rank-3 {
+        background: linear-gradient(135deg, #cd7f32, #e4a853);
+        
+        mat-icon {
+          color: white;
+        }
+      }
+      
+      &:not(.rank-1):not(.rank-2):not(.rank-3) {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        
+        mat-icon {
+          color: white;
+        }
+      }
+    }
+    
+    .rank-number {
+      font-weight: bold;
+      color: #1976d2;
+      margin-right: 8px;
+    }
+    
+    .donor-stats {
+      display: flex;
+      gap: 24px;
+      margin-top: 16px;
+      
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        mat-icon {
+          color: #666;
+        }
+        
+        .stat-label {
+          color: #666;
+        }
+        
+        .stat-value {
+          font-weight: bold;
+          color: #333;
+        }
+      }
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 50px;
+  color: #666;
+  
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+  
+  p {
+    margin-bottom: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .leaderboard-container {
+    padding: 16px;
+  }
+  
+  .header-section {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+    
+    button {
+      width: 100%;
+    }
+  }
+  
+  .period-selector {
+    mat-form-field {
+      width: 100%;
+    }
+  }
+  
+  .donor-stats {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

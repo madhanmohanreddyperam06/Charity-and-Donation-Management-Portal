@@ -1,0 +1,153 @@
+<div class="donation-details-container">
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+    <p>Loading donation details...</p>
+  </div>
+
+  <!-- Donation Details -->
+  <div class="donation-content" *ngIf="!isLoading && donation">
+    <!-- Header -->
+    <div class="header-section">
+      <button mat-icon-button (click)="goBack()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>Donation Details</h1>
+    </div>
+
+    <!-- Main Card -->
+    <mat-card class="donation-card">
+      <mat-card-header>
+        <div mat-card-avatar class="donation-avatar">
+          <mat-icon>{{getDonationTypeIcon(donation.donation_type)}}</mat-icon>
+        </div>
+        <mat-card-title>{{donation.donation_type | titlecase}} Donation</mat-card-title>
+        <mat-card-subtitle>by {{donation.ngo_name}}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Status and Priority -->
+        <div class="status-section">
+          <mat-chip-listbox>
+            <mat-chip-option [color]="getStatusColor(donation.status)">
+              Status: {{donation.status}}
+            </mat-chip-option>
+            <mat-chip-option *ngIf="donation.priority" [color]="getPriorityColor(donation.priority)">
+              Priority: {{donation.priority}}
+            </mat-chip-option>
+          </mat-chip-listbox>
+        </div>
+
+        <!-- Donation Information -->
+        <div class="donation-info">
+          <mat-card class="info-card">
+            <mat-card-header>
+              <mat-card-title>Donation Information</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-grid">
+                <div class="info-item">
+                  <mat-icon>category</mat-icon>
+                  <div>
+                    <label>Type</label>
+                    <p>{{donation.donation_type | titlecase}}</p>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <mat-icon>inventory</mat-icon>
+                  <div>
+                    <label>Quantity/Amount</label>
+                    <p>{{donation.quantity_or_amount}}
+                      <span *ngIf="donation.donation_type === 'funds'">$</span>
+                    </p>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <mat-icon>location_on</mat-icon>
+                  <div>
+                    <label>Location</label>
+                    <p>{{donation.location}}</p>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <mat-icon>schedule</mat-icon>
+                  <div>
+                    <label>Pickup Date & Time</label>
+                    <p>{{formatDate(donation.pickup_date_time)}}</p>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- NGO Information -->
+          <mat-card class="info-card" *ngIf="donation.ngo_name">
+            <mat-card-header>
+              <mat-card-title>NGO Information</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-grid">
+                <div class="info-item">
+                  <mat-icon>business</mat-icon>
+                  <div>
+                    <label>NGO Name</label>
+                    <p>{{donation.ngo_name}}</p>
+                  </div>
+                </div>
+                <div class="info-item" *ngIf="donation.contact_info">
+                  <mat-icon>contact_phone</mat-icon>
+                  <div>
+                    <label>Contact</label>
+                    <p>{{donation.contact_info}}</p>
+                  </div>
+                </div>
+                <div class="info-item" *ngIf="donation.ngo_email">
+                  <mat-icon>email</mat-icon>
+                  <div>
+                    <label>Email</label>
+                    <p>{{donation.ngo_email}}</p>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Description -->
+          <mat-card class="info-card" *ngIf="donation.description">
+            <mat-card-header>
+              <mat-card-title>Description</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="description">{{donation.description}}</p>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Images (if available) -->
+          <mat-card class="info-card" *ngIf="donation.images">
+            <mat-card-header>
+              <mat-card-title>Images</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="image-gallery">
+                <!-- Image display logic would go here -->
+                <p>Images would be displayed here</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="contributeToDonation()"
+                [disabled]="!isContributionAllowed()">
+          <mat-icon>volunteer_activism</mat-icon>
+          Contribute to this Donation
+        </button>
+        <button mat-stroked-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Back to Donations
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,185 @@
+.donation-details-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px;
+  
+  p {
+    margin-top: 20px;
+    color: #666;
+  }
+}
+
+.header-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  
+  h1 {
+    color: #333;
+    margin: 0;
+  }
+  
+  .back-button {
+    background: #f5f5f5;
+    
+    &:hover {
+      background: #e0e0e0;
+    }
+  }
+}
+
+.donation-card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.donation-avatar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  mat-icon {
+    color: white;
+  }
+}
+
+.status-section {
+  margin-bottom: 24px;
+}
+
+.donation-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-card {
+  border: 1px solid #e0e0e0;
+  
+  mat-card-header {
+    padding-bottom: 8px;
+    
+    mat-card-title {
+      font-size: 18px;
+      color: #333;
+    }
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  
+  mat-icon {
+    color: #667eea;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    margin-top: 2px;
+  }
+  
+  div {
+    flex: 1;
+    
+    label {
+      display: block;
+      font-weight: 500;
+      color: #666;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+    
+    p {
+      margin: 0;
+      color: #333;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+  }
+}
+
+.description {
+  color: #666;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.image-gallery {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  
+  img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+  }
+}
+
+mat-card-actions {
+  display: flex;
+  gap: 12px;
+  padding: 20px;
+  
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .donation-details-container {
+    padding: 16px;
+  }
+  
+  .header-section {
+    margin-bottom: 16px;
+    
+    h1 {
+      font-size: 24px;
+    }
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .info-item {
+    gap: 8px;
+    
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+  
+  mat-card-actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

@@ -1,0 +1,102 @@
+<div class="contribution-container">
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+    <p>Loading donation details...</p>
+  </div>
+
+  <!-- Contribution Form -->
+  <div class="contribution-content" *ngIf="!isLoading && donation">
+    <!-- Header -->
+    <div class="header-section">
+      <button mat-icon-button (click)="goBack()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>Contribute to Donation</h1>
+    </div>
+
+    <!-- Donation Summary -->
+    <mat-card class="donation-summary">
+      <mat-card-header>
+        <div mat-card-avatar class="donation-avatar">
+          <mat-icon>{{getDonationTypeIcon(donation.donation_type)}}</mat-icon>
+        </div>
+        <mat-card-title>{{donation.donation_type | titlecase}} Donation</mat-card-title>
+        <mat-card-subtitle>by {{donation.ngo_name}}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="summary-info">
+          <p><strong>Location:</strong> {{donation.location}}</p>
+          <p><strong>Pickup:</strong> {{donation.pickup_date_time | date:'medium'}}</p>
+          <p><strong>Requested:</strong> {{formatCurrency(donation.quantity_or_amount)}}</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Contribution Form -->
+    <mat-card class="contribution-form">
+      <mat-card-header>
+        <mat-card-title>Your Contribution</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="contributionForm" (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Contribution Amount</mat-label>
+            <input matInput type="number" formControlName="contribution_amount" 
+                   placeholder="Enter amount you want to contribute">
+            <span matPrefix>$</span>
+            <mat-error *ngIf="contributionForm.get('contribution_amount')?.hasError('required')">
+              Amount is required
+            </mat-error>
+            <mat-error *ngIf="contributionForm.get('contribution_amount')?.hasError('min')">
+              Amount must be greater than 0
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Notes (Optional)</mat-label>
+            <textarea matInput formControlName="notes" 
+                      placeholder="Any additional notes or instructions"
+                      rows="3"></textarea>
+          </mat-form-field>
+
+          <!-- Pickup Details for Physical Donations -->
+          <div class="pickup-section" *ngIf="requiresPickup()">
+            <h3>Pickup Details</h3>
+            
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Scheduled Pickup Date & Time</mat-label>
+              <input matInput type="datetime-local" formControlName="scheduled_pickup_date_time">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Pickup Address</mat-label>
+              <textarea matInput formControlName="pickup_address" 
+                        placeholder="Enter your pickup address"
+                        rows="2"></textarea>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button color="primary" type="submit" 
+                    [disabled]="contributionForm.invalid || isSubmitting">
+              <span *ngIf="!isSubmitting">
+                <mat-icon>volunteer_activism</mat-icon>
+                Submit Contribution
+              </span>
+              <span *ngIf="isSubmitting">
+                <mat-spinner diameter="20"></mat-spinner>
+                Submitting...
+              </span>
+            </button>
+            
+            <button mat-stroked-button type="button" (click)="goBack()">
+              <mat-icon>cancel</mat-icon>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

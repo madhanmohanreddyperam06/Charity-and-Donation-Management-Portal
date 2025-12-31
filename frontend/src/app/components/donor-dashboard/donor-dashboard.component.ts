@@ -69,7 +69,7 @@ export class DonorDashboardComponent implements OnInit, OnDestroy {
 
   calculateStats(): void {
     this.stats.totalContributions = this.myContributions.length;
-    this.stats.totalAmount = this.myContributions.reduce((sum, c) => sum + c.contribution_amount, 0);
+    this.stats.totalAmount = this.myContributions.reduce((sum, c) => sum + (c.contribution_amount || 0), 0);
     this.stats.pendingContributions = this.myContributions.filter(c => c.status === 'Pending').length;
     this.stats.completedContributions = this.myContributions.filter(c => c.status === 'Completed').length;
   }

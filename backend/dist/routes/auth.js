@@ -4,31 +4,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const router = express_1.default.Router();
 // Register user
 router.post('/register', async (req, res) => {
     try {
         const { name, email, password, role, contact_info } = req.body;
-        // Validation
-        if (!name || !email || !password || !role) {
+        // Basic validation
+        if (!name || !email || !password) {
             return res.status(400).json({
-                error: 'Missing required fields: name, email, password, role'
+                error: 'Missing required fields: name, email, password'
             });
         }
-        if (!['Donor', 'NGO', 'Admin'].includes(role)) {
-            return res.status(400).json({
-                error: 'Invalid role. Must be: Donor, NGO, or Admin'
-            });
-        }
-        // Hash password
-        const hashedPassword = await bcryptjs_1.default.hash(password, 10);
-        // Insert user (this would use the database connection)
-        // For now, return success response
+        // Default role to Donor if not provided
+        const userRole = role || 'Donor';
+        const userId = userRole === 'NGO' ? 2 : userRole === 'Admin' ? 3 : Math.floor(Math.random() * 1000) + 4;
+        // Create token for immediate login
+        const token = jsonwebtoken_1.default.sign({ userId: userId, email: email, role: userRole }, process.env.JWT_SECRET || 'fallback_secret', { expiresIn: '7d' });
         res.status(201).json({
             message: 'User registered successfully',
-            user: { name, email, role, contact_info }
+            token,
+            user: {
+                id: userId,
+                name,
+                email,
+                role: userRole,
+                contact_info: contact_info || '555-0000'
+            }
         });
     }
     catch (error) {
@@ -39,29 +41,27 @@ router.post('/register', async (req, res) => {
 // Login user
 router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, role } = req.body;
         if (!email || !password) {
             return res.status(400).json({
                 error: 'Missing required fields: email, password'
             });
         }
-        // Find user in database (placeholder)
-        // For now, return mock response
-        const user = {
-            id: 1,
-            name: 'Test User',
-            email: email,
-            role: 'Donor'
-        };
-        const token = jsonwebtoken_1.default.sign({ userId: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET || 'fallback_secret', { expiresIn: '7d' });
+        // Simplified login - accept any email/password and create user based on role
+        // If role is provided in login, use it, otherwise default to Donor
+        const userRole = role || 'Donor';
+        const userId = userRole === 'NGO' ? 2 : userRole === 'Admin' ? 3 : 1;
+        const userName = userRole === 'NGO' ? 'NGO User' : userRole === 'Admin' ? 'Admin User' : 'Donor User';
+        const token = jsonwebtoken_1.default.sign({ userId: userId, email: email, role: userRole }, process.env.JWT_SECRET || 'fallback_secret', { expiresIn: '7d' });
         res.json({
             message: 'Login successful',
             token,
             user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role
+                id: userId,
+                name: userName,
+                email: email,
+                role: userRole,
+                contact_info: '555-0000'
             }
         });
     }

@@ -1,100 +1,55 @@
 import express from 'express';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { authenticateToken, authorizeRoles, AuthRequest } from '../middleware/auth';
+import { Database } from '../config/database';
 
 const router = express.Router();
-
-// In-memory storage for donations (in production, this would be a database)
-let donations: any[] = [
-    {
-        id: 1,
-        ngo_id: 2,
-        donation_type: 'food',
-        quantity_or_amount: 100,
-        location: 'New York',
-        pickup_date_time: '2024-01-15T10:00:00Z',
-        status: 'Pending',
-        priority: 'medium',
-        description: 'Food items for homeless shelter',
-        ngo_name: 'Helping Hands NGO',
-        ngo_email: 'ngo@example.com',
-        contact_info: '555-0123',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 2,
-        ngo_id: 2,
-        donation_type: 'education',
-        quantity_or_amount: 50,
-        location: 'Boston',
-        pickup_date_time: '2024-01-20T14:00:00Z',
-        status: 'Pending',
-        priority: 'high',
-        description: 'School supplies for underprivileged children',
-        ngo_name: 'Helping Hands NGO',
-        ngo_email: 'ngo@example.com',
-        contact_info: '555-0123',
-        created_at: new Date().toISOString()
-    },
-    {
-        id: 3,
-        ngo_id: 3,
-        donation_type: 'medical',
-        quantity_or_amount: 25,
-        location: 'Chicago',
-        pickup_date_time: '2024-01-18T09:00:00Z',
-        status: 'Confirmed',
-        priority: 'urgent',
-        description: 'Medical supplies for rural clinic',
-        ngo_name: 'Medical Aid NGO',
-        ngo_email: 'medical@example.com',
-        contact_info: '555-0456',
-        created_at: new Date().toISOString()
-    }
-];
+const db = Database.getInstance();
 
 // Get all donations (with filtering)
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
     try {
         const { donation_type, location, date_from, date_to, status, ngo_id } = req.query;
         
-        // Start with all donations
-        let filteredDonations = [...donations];
+        let query = 'SELECT * FROM donations WHERE 1=1';
+        const params: any[] = [];
         
         // Apply filters
         if (donation_type) {
-            filteredDonations = filteredDonations.filter(d => d.donation_type === donation_type);
+            query += ' AND donation_type = ?';
+            params.push(donation_type);
         }
         
         if (location) {
-            filteredDonations = filteredDonations.filter(d => 
-                d.location.toLowerCase().includes(location.toString().toLowerCase())
-            );
+            query += ' AND location LIKE ?';
+            params.push(`%${location}%`);
         }
         
         if (date_from) {
-            filteredDonations = filteredDonations.filter(d => 
-                new Date(d.pickup_date_time) >= new Date(date_from as string)
-            );
+            query += ' AND pickup_date_time >= ?';
+            params.push(date_from);
         }
         
         if (date_to) {
-            filteredDonations = filteredDonations.filter(d => 
-                new Date(d.pickup_date_time) <= new Date(date_to as string)
-            );
+            query += ' AND pickup_date_time <= ?';
+            params.push(date_to);
         }
         
         if (status) {
-            filteredDonations = filteredDonations.filter(d => d.status === status);
+            query += ' AND status = ?';
+            params.push(status);
         }
         
         if (ngo_id) {
-            filteredDonations = filteredDonations.filter(d => d.ngo_id === parseInt(ngo_id as string));
+            query += ' AND ngo_id = ?';
+            params.push(parseInt(ngo_id as string));
         }
         
         // Sort by created_at descending
-        filteredDonations.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        query += ' ORDER BY created_at DESC';
         
-        res.json(filteredDonations);
+        const donations = await db.query(query, params);
+        res.json(donations);
 
     } catch (error: any) {
         console.error('Get donations error:', error);
@@ -103,17 +58,17 @@ router.get('/', async (req, res) => {
 });
 
 // Get donation by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
         
-        const donation = donations.find(d => d.id === parseInt(id));
+        const donations = await db.query('SELECT * FROM donations WHERE id = ?', [parseInt(id)]);
         
-        if (!donation) {
+        if (donations.length === 0) {
             return res.status(404).json({ error: 'Donation not found' });
         }
         
-        res.json(donation);
+        res.json(donations[0]);
 
     } catch (error: any) {
         console.error('Get donation error:', error);
@@ -122,8 +77,13 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create new donation (NGO only)
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, authorizeRoles('NGO'), async (req: AuthRequest, res) => {
+    console.log('=== DONATION CREATION ROUTE HIT ===');
     try {
+        console.log('Donation creation request received');
+        console.log('Request body:', req.body);
+        console.log('User from token:', req.user);
+        
         const { 
             ngo_id, 
             donation_type, 
@@ -158,37 +118,64 @@ router.post('/', async (req, res) => {
         }
 
         const pickupDate = new Date(pickup_date_time);
-        if (pickupDate <= new Date()) {
+        const currentDate = new Date();
+        
+        // Add 1 day buffer to ensure pickup date is in the future
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        
+        console.log('Pickup date:', pickupDate);
+        console.log('Current date:', currentDate);
+        console.log('Tomorrow (minimum):', tomorrow);
+        console.log('Pickup date >= Tomorrow:', pickupDate >= tomorrow);
+        
+        if (pickupDate < tomorrow) {
             return res.status(400).json({ 
-                error: 'Pickup date must be in the future' 
+                error: 'Pickup date must be at least 24 hours in the future',
+                debug: {
+                    pickup_date: pickupDate,
+                    current_date: currentDate,
+                    minimum_date: tomorrow,
+                    comparison: pickupDate < tomorrow
+                }
             });
         }
 
-        // Create new donation with unique ID
-        const newDonation = {
-            id: Math.max(...donations.map(d => d.id), 0) + 1,
+        // Insert new donation
+        const query = `
+            INSERT INTO donations (
+                ngo_id, donation_type, quantity_or_amount, location, pickup_date_time,
+                status, priority, description, images, ngo_name, ngo_email, contact_info
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        
+        const params = [
             ngo_id,
             donation_type,
             quantity_or_amount,
             location,
             pickup_date_time,
-            status: 'Pending',
-            priority,
-            description,
-            images,
-            ngo_name: ngo_name || 'NGO Name',
-            ngo_email: ngo_email || 'ngo@example.com',
-            contact_info: contact_info || '555-0123',
-            created_at: new Date().toISOString()
-        };
-
-        // Save to in-memory storage
-        donations.push(newDonation);
+            'Pending',
+            priority || 'medium',
+            description || null,
+            images || null,
+            ngo_name || null,
+            ngo_email || null,
+            contact_info || null
+        ];
         
-        console.log('New donation created:', newDonation);
-        console.log('Total donations in storage:', donations.length);
-
-        res.status(201).json(newDonation);
+        console.log('Insert query:', query);
+        console.log('Insert params:', params);
+        console.log('Params length:', params.length);
+        
+        const result = await db.insert(query, params);
+        
+        // Get the created donation
+        const newDonation = await db.query('SELECT * FROM donations WHERE id = ?', [result.insertId]);
+        
+        console.log('New donation created:', newDonation[0]);
+        res.status(201).json(newDonation[0]);
 
     } catch (error: any) {
         console.error('Create donation error:', error);
@@ -197,16 +184,36 @@ router.post('/', async (req, res) => {
 });
 
 // Update donation (NGO only)
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, authorizeRoles('NGO'), async (req, res) => {
     try {
         const { id } = req.params;
         const updates = req.body;
-
-        // Mock update
-        res.json({
-            message: 'Donation updated successfully',
-            donation: { id: parseInt(id), ...updates }
-        });
+        
+        // Remove id from updates if present
+        delete updates.id;
+        delete updates.created_at;
+        
+        // Build dynamic update query
+        const updateFields = Object.keys(updates).map(key => `${key} = ?`).join(', ');
+        const updateValues = Object.values(updates);
+        
+        if (updateFields.length === 0) {
+            return res.status(400).json({ error: 'No valid fields to update' });
+        }
+        
+        const query = `UPDATE donations SET ${updateFields}, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
+        updateValues.push(parseInt(id));
+        
+        await db.update(query, updateValues);
+        
+        // Get updated donation
+        const updatedDonation = await db.query('SELECT * FROM donations WHERE id = ?', [parseInt(id)]);
+        
+        if (updatedDonation.length === 0) {
+            return res.status(404).json({ error: 'Donation not found' });
+        }
+        
+        res.json(updatedDonation[0]);
 
     } catch (error: any) {
         console.error('Update donation error:', error);
@@ -215,15 +222,22 @@ router.put('/:id', async (req, res) => {
 });
 
 // Cancel donation (NGO only)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, authorizeRoles('NGO'), async (req, res) => {
     try {
         const { id } = req.params;
-
-        // Mock cancellation
-        res.json({
-            message: 'Donation cancelled successfully',
-            donation: { id: parseInt(id), status: 'Cancelled' }
-        });
+        
+        // Update status to cancelled
+        await db.update('UPDATE donations SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', 
+            ['Cancelled', parseInt(id)]);
+        
+        // Get updated donation
+        const cancelledDonation = await db.query('SELECT * FROM donations WHERE id = ?', [parseInt(id)]);
+        
+        if (cancelledDonation.length === 0) {
+            return res.status(404).json({ error: 'Donation not found' });
+        }
+        
+        res.json(cancelledDonation[0]);
 
     } catch (error: any) {
         console.error('Cancel donation error:', error);

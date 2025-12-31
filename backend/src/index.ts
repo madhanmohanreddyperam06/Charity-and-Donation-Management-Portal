@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { createConnection } from 'mysql2/promise';
+import { Database } from './config/database';
 import authRoutes from './routes/auth';
 import donationRoutes from './routes/donations';
 import contributionRoutes from './routes/contributions';
@@ -16,20 +16,20 @@ app.use(cors());
 app.use(express.json());
 
 // Database connection
-let db: any;
+const db = Database.getInstance();
 
-async function connectDatabase() {
+async function startServer() {
     try {
-        db = await createConnection({
-            host: process.env.DB_HOST || 'localhost',
-            user: process.env.DB_USER || 'root',
-            password: process.env.DB_PASSWORD || '',
-            database: process.env.DB_NAME || 'charity_portal',
-            port: parseInt(process.env.DB_PORT || '3306')
-        });
+        // Connect to database
+        await db.connect();
         console.log('Database connected successfully');
+        
+        // Start server
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
     } catch (error) {
-        console.error('Database connection failed:', error);
+        console.error('Failed to start server:', error);
         process.exit(1);
     }
 }
@@ -50,13 +50,6 @@ app.get('/health', (req, res) => {
 });
 
 // Start server
-async function startServer() {
-    await connectDatabase();
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-}
-
 startServer().catch(console.error);
 
 export default app;

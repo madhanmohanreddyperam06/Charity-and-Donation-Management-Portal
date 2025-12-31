@@ -1,32 +1,23 @@
 import express from 'express';
+import { authenticateToken } from '../middleware/auth';
+import { Database } from '../config/database';
 
 const router = express.Router();
+const db = Database.getInstance();
 
 // Get all contributions for a donor
-router.get('/donor/:donorId', async (req, res) => {
+router.get('/donor/:donorId', authenticateToken, async (req, res) => {
     try {
         const { donorId } = req.params;
-
-        // Mock response
-        const mockContributions = [
-            {
-                id: 1,
-                donation_id: 1,
-                donor_id: parseInt(donorId),
-                contribution_amount: 50,
-                notes: 'Happy to help!',
-                status: 'Confirmed',
-                created_at: new Date().toISOString(),
-                donation: {
-                    id: 1,
-                    donation_type: 'food',
-                    location: 'New York',
-                    ngo_name: 'Helping Hands NGO'
-                }
-            }
-        ];
-
-        res.json(mockContributions);
+        
+        const contributions = await db.query(
+            'SELECT c.*, d.donation_type, d.location, d.ngo_name FROM contributions c ' +
+            'LEFT JOIN donations d ON c.donation_id = d.id ' +
+            'WHERE c.donor_id = ? ORDER BY c.created_at DESC',
+            [parseInt(donorId)]
+        );
+        
+        res.json(contributions);
 
     } catch (error: any) {
         console.error('Get donor contributions error:', error);
@@ -35,29 +26,18 @@ router.get('/donor/:donorId', async (req, res) => {
 });
 
 // Get all contributions for a donation
-router.get('/donation/:donationId', async (req, res) => {
+router.get('/donation/:donationId', authenticateToken, async (req, res) => {
     try {
         const { donationId } = req.params;
-
-        // Mock response
-        const mockContributions = [
-            {
-                id: 1,
-                donation_id: parseInt(donationId),
-                donor_id: 3,
-                contribution_amount: 50,
-                notes: 'Happy to help!',
-                status: 'Confirmed',
-                created_at: new Date().toISOString(),
-                donor: {
-                    id: 3,
-                    name: 'John Doe',
-                    email: 'john@example.com'
-                }
-            }
-        ];
-
-        res.json(mockContributions);
+        
+        const contributions = await db.query(
+            'SELECT c.*, u.name as donor_name, u.email as donor_email FROM contributions c ' +
+            'LEFT JOIN users u ON c.donor_id = u.id ' +
+            'WHERE c.donation_id = ? ORDER BY c.created_at DESC',
+            [parseInt(donationId)]
+        );
+        
+        res.json(contributions);
 
     } catch (error: any) {
         console.error('Get donation contributions error:', error);
@@ -66,15 +46,13 @@ router.get('/donation/:donationId', async (req, res) => {
 });
 
 // Create new contribution
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
     try {
         const { 
             donation_id, 
             donor_id, 
             contribution_amount, 
-            notes,
-            scheduled_pickup_date_time,
-            pickup_address 
+            notes 
         } = req.body;
 
         // Validation
@@ -90,35 +68,44 @@ router.post('/', async (req, res) => {
             });
         }
 
-        // Mock creation
-        const newContribution = {
-            id: Date.now(),
+        // Check if donation exists and is not cancelled
+        const donation = await db.query('SELECT * FROM donations WHERE id = ?', [parseInt(donation_id)]);
+        
+        if (donation.length === 0) {
+            return res.status(404).json({ error: 'Donation not found' });
+        }
+        
+        if (donation[0].status === 'Cancelled') {
+            return res.status(400).json({ error: 'Cannot contribute to cancelled donation' });
+        }
+
+        // Insert new contribution
+        const query = `
+            INSERT INTO contributions (
+                donation_id, donor_id, contribution_amount, notes, status
+            ) VALUES (?, ?, ?, ?, ?)
+        `;
+        
+        const params = [
             donation_id,
             donor_id,
             contribution_amount,
-            notes,
-            status: 'Pending',
-            created_at: new Date().toISOString()
-        };
-
-        // Create pickup if scheduled
-        let pickup = null;
-        if (scheduled_pickup_date_time && pickup_address) {
-            pickup = {
-                id: Date.now() + 1,
-                contribution_id: newContribution.id,
-                scheduled_date_time: scheduled_pickup_date_time,
-                status: 'Scheduled',
-                pickup_address,
-                created_at: new Date().toISOString()
-            };
-        }
-
-        res.status(201).json({
-            message: 'Contribution created successfully',
-            contribution: newContribution,
-            pickup
-        });
+            notes || '',
+            'Pending'
+        ];
+        
+        const result = await db.insert(query, params);
+        
+        // Get the created contribution with donation details
+        const newContribution = await db.query(
+            'SELECT c.*, d.donation_type, d.location, d.ngo_name FROM contributions c ' +
+            'LEFT JOIN donations d ON c.donation_id = d.id ' +
+            'WHERE c.id = ?',
+            [result.insertId]
+        );
+        
+        console.log('New contribution created:', newContribution[0]);
+        res.status(201).json(newContribution[0]);
 
     } catch (error: any) {
         console.error('Create contribution error:', error);
@@ -126,23 +113,37 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Update contribution status (NGO only)
-router.put('/:id/status', async (req, res) => {
+// Update contribution status
+router.put('/:id/status', authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
-
+        
         if (!['Pending', 'Confirmed', 'Completed'].includes(status)) {
             return res.status(400).json({ 
-                error: 'Invalid status. Must be: Pending, Confirmed, or Completed' 
+                error: 'Invalid status. Must be one of: Pending, Confirmed, Completed' 
             });
         }
-
-        // Mock update
-        res.json({
-            message: 'Contribution status updated successfully',
-            contribution: { id: parseInt(id), status }
-        });
+        
+        // Update contribution status
+        await db.update(
+            'UPDATE contributions SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+            [status, parseInt(id)]
+        );
+        
+        // Get updated contribution
+        const updatedContribution = await db.query(
+            'SELECT c.*, d.donation_type, d.location, d.ngo_name FROM contributions c ' +
+            'LEFT JOIN donations d ON c.donation_id = d.id ' +
+            'WHERE c.id = ?',
+            [parseInt(id)]
+        );
+        
+        if (updatedContribution.length === 0) {
+            return res.status(404).json({ error: 'Contribution not found' });
+        }
+        
+        res.json(updatedContribution[0]);
 
     } catch (error: any) {
         console.error('Update contribution status error:', error);

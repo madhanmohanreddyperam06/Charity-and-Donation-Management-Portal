@@ -41,6 +41,68 @@
   }
 }
 
+.recent-activity-section {
+  margin-bottom: 32px;
+  
+  h2 {
+    color: #333;
+    margin-bottom: 24px;
+  }
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.activity-card {
+  .activity-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    
+    .activity-icon {
+      background: #f0f0f0;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #667eea;
+      flex-shrink: 0;
+    }
+    
+    .activity-details {
+      flex: 1;
+      
+      .activity-title {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+      }
+      
+      .activity-description {
+        color: #666;
+        margin-bottom: 4px;
+      }
+      
+      .activity-date {
+        color: #999;
+        font-size: 0.875rem;
+      }
+    }
+    
+    .activity-amount {
+      font-weight: bold;
+      color: #2e7d32;
+      font-size: 1.1rem;
+    }
+  }
+}
+
 .loading-container {
   display: flex;
   flex-direction: column;

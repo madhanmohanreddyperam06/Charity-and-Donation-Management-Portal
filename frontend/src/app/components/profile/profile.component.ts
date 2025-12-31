@@ -74,8 +74,9 @@ export class ProfileComponent implements OnInit {
         rank: 0
       };
     } else if (this.currentUser?.role === 'NGO') {
+      // For NGO, totalContributions represents donations created
       this.userStats = {
-        totalContributions: 0,
+        totalContributions: 0, // This will show "Donations Created"
         totalAmount: 0,
         rank: 0
       };

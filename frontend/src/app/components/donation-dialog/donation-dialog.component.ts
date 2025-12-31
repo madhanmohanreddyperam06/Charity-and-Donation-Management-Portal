@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DonationService } from '../../services/donation.service';
 import { AuthService } from '../../services/auth.service';
+import { CreateDonationRequest } from '../../models/donation.model';
 
 export interface DonationDialogData {
   mode: 'create' | 'edit';
@@ -63,22 +64,41 @@ export class DonationDialogComponent implements OnInit {
   onSubmit(): void {
     console.log('Form submitted:', this.donationForm.value);
     console.log('Form valid:', this.donationForm.valid);
+    console.log('Form errors:', this.donationForm.errors);
     console.log('Current user:', this.currentUser);
+    
+    // Check each required field individually
+    const formValue = this.donationForm.value;
+    console.log('Individual fields:');
+    console.log('- donation_type:', formValue.donation_type);
+    console.log('- quantity_or_amount:', formValue.quantity_or_amount);
+    console.log('- location:', formValue.location);
+    console.log('- pickup_date_time:', formValue.pickup_date_time);
+    console.log('- priority:', formValue.priority);
+    console.log('- description:', formValue.description);
     
     if (this.donationForm.valid) {
       this.isLoading = true;
       
-      const donationData = {
-        ...this.donationForm.value,
+      // Ensure all required fields are properly formatted
+      const donationData: CreateDonationRequest = {
         ngo_id: this.currentUser.id,
-        ngo_name: this.currentUser.name,
-        ngo_email: this.currentUser.email || 'ngo@example.com',
-        contact_info: this.currentUser.contact_info || '555-0123',
-        status: 'Pending',
-        created_at: new Date().toISOString()
+        donation_type: formValue.donation_type?.trim() || 'food',
+        quantity_or_amount: parseFloat(formValue.quantity_or_amount) || 0,
+        location: formValue.location?.trim() || '',
+        pickup_date_time: formValue.pickup_date_time || '',
+        priority: formValue.priority || 'medium',
+        description: formValue.description?.trim() || '',
+        images: undefined
       };
 
       console.log('Donation data to send:', donationData);
+      console.log('Required fields check:');
+      console.log('- ngo_id:', donationData.ngo_id);
+      console.log('- donation_type:', donationData.donation_type);
+      console.log('- quantity_or_amount:', donationData.quantity_or_amount);
+      console.log('- location:', donationData.location);
+      console.log('- pickup_date_time:', donationData.pickup_date_time);
 
       if (this.data.mode === 'create') {
         this.donationService.createDonation(donationData).subscribe({
@@ -92,9 +112,28 @@ export class DonationDialogComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error creating donation:', error);
+            console.error('Error status:', error.status);
+            console.error('Error message:', error.message);
+            console.error('Error details:', error.error);
+            console.error('Full error object:', JSON.stringify(error, null, 2));
+            
             this.isLoading = false;
-            this.snackBar.open('Failed to create donation. Please try again.', 'Close', {
-              duration: 3000,
+            
+            // Show specific error message to user
+            let errorMessage = 'Failed to create donation. Please try again.';
+            
+            if (error.status === 400) {
+              errorMessage = error.error?.error || 'Invalid donation data. Please check all required fields.';
+            } else if (error.status === 401) {
+              errorMessage = 'Authentication error. Please login again.';
+            } else if (error.status === 403) {
+              errorMessage = 'Permission denied. Only NGOs can create donations.';
+            } else if (error.status === 500) {
+              errorMessage = 'Server error. Please try again later.';
+            }
+            
+            this.snackBar.open(errorMessage, 'Close', {
+              duration: 5000,
               panelClass: ['error-snackbar']
             });
           },
@@ -114,9 +153,30 @@ export class DonationDialogComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error updating donation:', error);
+            console.error('Error status:', error.status);
+            console.error('Error message:', error.message);
+            console.error('Error details:', error.error);
+            console.error('Full error object:', JSON.stringify(error, null, 2));
+            
             this.isLoading = false;
-            this.snackBar.open('Failed to update donation. Please try again.', 'Close', {
-              duration: 3000,
+            
+            // Show specific error message to user
+            let errorMessage = 'Failed to update donation. Please try again.';
+            
+            if (error.status === 400) {
+              errorMessage = error.error?.error || 'Invalid donation data. Please check all required fields.';
+            } else if (error.status === 401) {
+              errorMessage = 'Authentication error. Please login again.';
+            } else if (error.status === 403) {
+              errorMessage = 'Permission denied. You can only edit your own donations.';
+            } else if (error.status === 404) {
+              errorMessage = 'Donation not found.';
+            } else if (error.status === 500) {
+              errorMessage = 'Server error. Please try again later.';
+            }
+            
+            this.snackBar.open(errorMessage, 'Close', {
+              duration: 5000,
               panelClass: ['error-snackbar']
             });
           },
@@ -125,6 +185,11 @@ export class DonationDialogComponent implements OnInit {
           }
         });
       }
+    } else {
+      console.log('Form is invalid, marking all fields as touched');
+      Object.keys(this.donationForm.controls).forEach(key => {
+        this.donationForm.get(key)?.markAsTouched();
+      });
     }
   }
 

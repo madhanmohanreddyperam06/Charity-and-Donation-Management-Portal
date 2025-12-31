@@ -10,37 +10,37 @@
   <div class="stats-section">
     <mat-card class="stat-card">
       <mat-card-header>
-        <mat-card-title>Total Donations</mat-card-title>
+        <mat-card-title>Total Contributions Received</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="stat-value">{{ stats.totalDonations }}</div>
+        <div class="stat-value">{{ contributionStats.totalContributions }}</div>
       </mat-card-content>
     </mat-card>
 
     <mat-card class="stat-card">
       <mat-card-header>
-        <mat-card-title>Pending</mat-card-title>
+        <mat-card-title>Total Amount Received</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="stat-value">{{ stats.pendingDonations }}</div>
+        <div class="stat-value">{{ formatCurrency(contributionStats.totalAmount) }}</div>
       </mat-card-content>
     </mat-card>
 
     <mat-card class="stat-card">
       <mat-card-header>
-        <mat-card-title>Confirmed</mat-card-title>
+        <mat-card-title>Pending Contributions</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="stat-value">{{ stats.confirmedDonations }}</div>
+        <div class="stat-value">{{ contributionStats.pendingContributions }}</div>
       </mat-card-content>
     </mat-card>
 
     <mat-card class="stat-card">
       <mat-card-header>
-        <mat-card-title>Completed</mat-card-title>
+        <mat-card-title>Confirmed Contributions</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="stat-value">{{ stats.completedDonations }}</div>
+        <div class="stat-value">{{ contributionStats.confirmedContributions }}</div>
       </mat-card-content>
     </mat-card>
   </div>
@@ -90,6 +90,46 @@
         </button>
         <button mat-button color="warn" (click)="cancelDonation(donation.id)">
           Cancel
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Contributions Received Section -->
+  <div class="contributions-section">
+    <h2>Contributions Received</h2>
+    
+    <div *ngIf="receivedContributions.length === 0" class="empty-state">
+      <mat-icon>volunteer_activism</mat-icon>
+      <p>No contributions received yet. Donors will contribute to your donation requests!</p>
+    </div>
+
+    <mat-card *ngFor="let contribution of receivedContributions" class="contribution-card">
+      <mat-card-header>
+        <div mat-card-avatar class="contribution-avatar">
+          <mat-icon>volunteer_activism</mat-icon>
+        </div>
+        <mat-card-title>{{ contribution.donation_title || 'Contribution' }}</mat-card-title>
+        <mat-card-subtitle>{{ contribution.donor?.name || 'Anonymous Donor' }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="contribution-details">
+          <p><strong>Amount:</strong> {{ formatCurrency(contribution.contribution_amount) }}</p>
+          <p><strong>Date:</strong> {{ formatDate(contribution.created_at) }}</p>
+          <p><strong>Status:</strong> 
+            <mat-chip [color]="getStatusColor(contribution.status)">
+              {{ contribution.status }}
+            </mat-chip>
+          </p>
+          <p *ngIf="contribution.notes"><strong>Notes:</strong> {{ contribution.notes }}</p>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="viewContributionDetails(contribution.id)">
+          View Details
+        </button>
+        <button mat-button color="accent" (click)="updateContributionStatus(contribution.id, 'Confirmed')" *ngIf="contribution.status === 'Pending'">
+          Confirm
         </button>
       </mat-card-actions>
     </mat-card>

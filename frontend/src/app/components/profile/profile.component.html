@@ -11,29 +11,70 @@
       
       <mat-card-content>
         <div class="profile-stats">
-          <div class="stat-card">
-            <mat-icon class="stat-icon">volunteer_activism</mat-icon>
-            <div class="stat-content">
-              <div class="stat-number">{{userStats.totalContributions}}</div>
-              <div class="stat-label">Contributions</div>
+          <!-- NGO Profile Stats -->
+          <ng-container *ngIf="currentUser?.role === 'NGO'">
+            <div class="stat-card">
+              <mat-icon class="stat-icon">volunteer_activism</mat-icon>
+              <div class="stat-content">
+                <div class="stat-number">{{userStats.totalContributions}}</div>
+                <div class="stat-label">Donations Created</div>
+              </div>
             </div>
-          </div>
-          
-          <div class="stat-card">
-            <mat-icon class="stat-icon">attach_money</mat-icon>
-            <div class="stat-content">
-              <div class="stat-number">{{formatCurrency(userStats.totalAmount)}}</div>
-              <div class="stat-label">Total Donated</div>
+            
+            <div class="stat-card">
+              <mat-icon class="stat-icon">emoji_events</mat-icon>
+              <div class="stat-content">
+                <div class="stat-number">#{{userStats.rank}}</div>
+                <div class="stat-label">Rank</div>
+              </div>
             </div>
-          </div>
-          
-          <div class="stat-card">
-            <mat-icon class="stat-icon">emoji_events</mat-icon>
-            <div class="stat-content">
-              <div class="stat-number">#{{userStats.rank}}</div>
-              <div class="stat-label">Rank</div>
+          </ng-container>
+
+          <!-- Donor Profile Stats -->
+          <ng-container *ngIf="currentUser?.role === 'Donor'">
+            <div class="stat-card">
+              <mat-icon class="stat-icon">volunteer_activism</mat-icon>
+              <div class="stat-content">
+                <div class="stat-number">{{userStats.totalContributions}}</div>
+                <div class="stat-label">Contributions</div>
+              </div>
             </div>
-          </div>
+            
+            <div class="stat-card">
+              <mat-icon class="stat-icon">attach_money</mat-icon>
+              <div class="stat-content">
+                <div class="stat-number">{{formatCurrency(userStats.totalAmount)}}</div>
+                <div class="stat-label">Total Donated</div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <mat-icon class="stat-icon">emoji_events</mat-icon>
+              <div class="stat-content">
+                <div class="stat-number">#{{userStats.rank}}</div>
+                <div class="stat-label">Rank</div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Admin Profile Stats (if needed) -->
+          <ng-container *ngIf="currentUser?.role === 'Admin'">
+            <div class="stat-card">
+              <mat-icon class="stat-icon">admin_panel_settings</mat-icon>
+              <div class="stat-content">
+                <div class="stat-number">{{userStats.totalContributions}}</div>
+                <div class="stat-label">Total Managed</div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <mat-icon class="stat-icon">emoji_events</mat-icon>
+              <div class="stat-content">
+                <div class="stat-number">#{{userStats.rank}}</div>
+                <div class="stat-label">Rank</div>
+              </div>
+            </div>
+          </ng-container>
         </div>
       </mat-card-content>
     </mat-card>

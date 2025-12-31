@@ -4,7 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { DonationService } from '../../services/donation.service';
 import { AuthService } from '../../services/auth.service';
-import { Donation } from '../../models/donation.model';
+import { Donation, Contribution } from '../../models/donation.model';
 import { DonationDialogComponent, DonationDialogData } from '../donation-dialog/donation-dialog.component';
 import { NotificationService } from '../../services/notification.service';
 
@@ -15,6 +15,7 @@ import { NotificationService } from '../../services/notification.service';
 })
 export class NgoDashboardComponent implements OnInit {
   myDonations: Donation[] = [];
+  receivedContributions: Contribution[] = [];
   isLoading = false;
   currentUser: any = null;
   stats = {
@@ -22,6 +23,12 @@ export class NgoDashboardComponent implements OnInit {
     pendingDonations: 0,
     confirmedDonations: 0,
     completedDonations: 0
+  };
+  contributionStats = {
+    totalContributions: 0,
+    totalAmount: 0,
+    pendingContributions: 0,
+    confirmedContributions: 0
   };
 
   constructor(
@@ -40,6 +47,13 @@ export class NgoDashboardComponent implements OnInit {
       return;
     }
     this.loadMyDonations();
+    this.loadReceivedContributions();
+    
+    // Set up real-time updates
+    setInterval(() => {
+      this.loadMyDonations();
+      this.loadReceivedContributions();
+    }, 30000); // Refresh every 30 seconds
   }
 
   loadMyDonations(): void {
@@ -69,28 +83,19 @@ export class NgoDashboardComponent implements OnInit {
   createNewDonation(): void {
     const dialogRef = this.dialog.open(DonationDialogComponent, {
       width: '600px',
-      maxWidth: '90vw',
-      data: { mode: 'create' },
-      disableClose: false
+      data: { mode: 'create' }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Dialog closed with result:', result);
-        // Add to new donation to list immediately
-        if (result.id) {
-          this.myDonations.unshift(result);
-          this.calculateStats();
-          
-          // Send notification to all donors about new donation
-          this.notificationService.addDonationCreatedNotification(
-            this.currentUser.name,
-            result.description || `${result.donation_type} donation`,
-            result.id
-          );
-        }
-        // Also refresh from server to get latest data
+        console.log('Donation created:', result);
+        // Refresh donations to show the new one
         this.loadMyDonations();
+        
+        this.snackBar.open('Donation created successfully!', 'Close', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
       }
     });
   }
@@ -178,6 +183,13 @@ export class NgoDashboardComponent implements OnInit {
            new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  }
+
   getDonationTypeIcon(type: string): string {
     switch (type) {
       case 'food': return 'restaurant';
@@ -190,6 +202,56 @@ export class NgoDashboardComponent implements OnInit {
       case 'books': return 'menu_book';
       case 'electronics': return 'devices';
       default: return 'inventory_2';
+    }
+  }
+
+  loadReceivedContributions(): void {
+    // Mock contributions data for NGO dashboard - reduced to 1 contribution
+    this.receivedContributions = [
+      {
+        id: 101,
+        donation_id: 3,
+        donor_id: 1,
+        contribution_amount: 500,
+        notes: 'Happy to contribute to this emergency medical fund!',
+        status: 'Confirmed',
+        created_at: '2025-01-10T10:30:00Z',
+        contribution_date: '2025-01-10T10:30:00Z',
+        donation_title: 'Emergency funds for medical supplies',
+        ngo_name: 'Medical Aid NGO',
+        donor: {
+          id: 1,
+          name: 'John Doe',
+          email: 'donor@example.com'
+        }
+      }
+    ];
+    
+    this.calculateContributionStats();
+  }
+
+  calculateContributionStats(): void {
+    this.contributionStats.totalContributions = this.receivedContributions.length;
+    this.contributionStats.totalAmount = this.receivedContributions.reduce((sum, c) => sum + c.contribution_amount, 0);
+    this.contributionStats.pendingContributions = this.receivedContributions.filter(c => c.status === 'Pending').length;
+    this.contributionStats.confirmedContributions = this.receivedContributions.filter(c => c.status === 'Confirmed').length;
+  }
+
+  viewContributionDetails(contributionId: number): void {
+    this.router.navigate(['/contributions', contributionId]);
+  }
+
+  updateContributionStatus(contributionId: number, status: string): void {
+    // Find the contribution and update its status
+    const contribution = this.receivedContributions.find(c => c.id === contributionId);
+    if (contribution) {
+      contribution.status = status as 'Pending' | 'Confirmed' | 'Completed';
+      this.calculateContributionStats();
+      
+      this.snackBar.open(`Contribution ${status.toLowerCase()} successfully!`, 'Close', {
+        duration: 3000,
+        panelClass: ['success-snackbar']
+      });
     }
   }
 

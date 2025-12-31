@@ -89,9 +89,31 @@ export class ContributionComponent implements OnInit {
           this.router.navigate(['/donor/dashboard']);
         },
         error: (error) => {
+          console.error('Error creating contribution:', error);
+          console.error('Error status:', error.status);
+          console.error('Error message:', error.message);
+          console.error('Error details:', error.error);
+          console.error('Full error object:', JSON.stringify(error, null, 2));
+          
           this.isSubmitting = false;
-          this.snackBar.open(error.error?.error || 'Failed to submit contribution', 'Close', {
-            duration: 3000,
+          
+          // Show specific error message to user
+          let errorMessage = error.error?.error || 'Failed to submit contribution';
+          
+          if (error.status === 400) {
+            errorMessage = error.error?.error || 'Invalid contribution data. Please check all required fields.';
+          } else if (error.status === 401) {
+            errorMessage = 'Authentication error. Please login again.';
+          } else if (error.status === 403) {
+            errorMessage = 'Permission denied. Only donors can submit contributions.';
+          } else if (error.status === 404) {
+            errorMessage = 'Donation not found.';
+          } else if (error.status === 500) {
+            errorMessage = 'Server error. Please try again later.';
+          }
+          
+          this.snackBar.open(errorMessage, 'Close', {
+            duration: 5000,
             panelClass: ['error-snackbar']
           });
         }

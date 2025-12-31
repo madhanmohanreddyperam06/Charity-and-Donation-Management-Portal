@@ -19,6 +19,18 @@ export class HeaderComponent implements OnInit {
     this.currentUser = this.authService.getCurrentUser();
   }
 
+  getDashboardRoute(): string {
+    if (this.currentUser?.role === 'Admin') {
+      return '/admin/dashboard';
+    } else if (this.currentUser?.role === 'NGO') {
+      return '/ngo/dashboard';
+    } else if (this.currentUser?.role === 'Donor') {
+      return '/donor/dashboard';
+    } else {
+      return '/donations';
+    }
+  }
+
   logout(): void {
     // Clear any stored authentication data
     localStorage.removeItem('token');

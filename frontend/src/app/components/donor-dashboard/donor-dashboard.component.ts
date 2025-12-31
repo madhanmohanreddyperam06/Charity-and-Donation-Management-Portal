@@ -1,19 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DonationService } from '../../services/donation.service';
 import { AuthService } from '../../services/auth.service';
 import { Contribution } from '../../models/donation.model';
+import { Subscription, interval } from 'rxjs';
 
 @Component({
   selector: 'app-donor-dashboard',
   templateUrl: './donor-dashboard.component.html',
   styleUrls: ['./donor-dashboard.component.scss']
 })
-export class DonorDashboardComponent implements OnInit {
+export class DonorDashboardComponent implements OnInit, OnDestroy {
   myContributions: Contribution[] = [];
   isLoading = true;
   currentUser: any = null;
+  private refreshSubscription: Subscription | null = null;
   stats = {
     totalContributions: 0,
     totalAmount: 0,
@@ -35,6 +37,16 @@ export class DonorDashboardComponent implements OnInit {
       return;
     }
     this.loadMyContributions();
+    // Set up real-time refresh every 30 seconds
+    this.refreshSubscription = interval(30000).subscribe(() => {
+      this.loadMyContributions();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
   }
 
   loadMyContributions(): void {

@@ -1,6 +1,6 @@
 .landing-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #283593 0%, #FF7043 100%);
   font-family: 'Roboto', sans-serif;
 }
 
@@ -97,7 +97,7 @@
   transform: translateX(-50%);
   width: 80px;
   height: 4px;
-  background: linear-gradient(45deg, #667eea, #764ba2);
+  background: linear-gradient(45deg, #283593, #FF7043);
   border-radius: 2px;
 }
 
@@ -125,7 +125,7 @@
 .feature-icon {
   font-size: 3rem;
   margin-bottom: 15px;
-  background: linear-gradient(45deg, #667eea, #764ba2);
+  background: linear-gradient(45deg, #283593, #FF7043);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -147,7 +147,7 @@
 /* Stats Section */
 .stats-section {
   padding: 80px 10%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #283593 0%, #FF7043 100%);
   color: white;
 }
 
@@ -208,13 +208,13 @@
   padding: 18px 40px;
   font-size: 1.2rem;
   border-radius: 50px;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 15px rgba(40, 53, 147, 0.4);
   transition: all 0.3s ease;
 }
 
 .cta-buttons button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  box-shadow: 0 6px 20px rgba(40, 53, 147, 0.6);
 }
 
 /* Footer */

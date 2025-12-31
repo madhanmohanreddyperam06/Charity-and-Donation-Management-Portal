@@ -1,19 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DonationService } from '../../services/donation.service';
 import { Donation } from '../../models/donation.model';
+import { Subscription, interval } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-donation-list',
   templateUrl: './donation-list.component.html',
   styleUrls: ['./donation-list.component.scss']
 })
-export class DonationListComponent implements OnInit {
+export class DonationListComponent implements OnInit, OnDestroy {
   donations: Donation[] = [];
   filteredDonations: Donation[] = [];
   isLoading = true;
-  
+  private refreshSubscription: Subscription | null = null;
+  private destroy$ = new Subject<void>();
+
   // Filter options
   donationTypes = ['food', 'funds', 'clothes', 'education', 'medical', 'shelter', 'toys', 'books', 'electronics', 'other'];
   statuses = ['Pending', 'Confirmed', 'Completed'];
@@ -29,24 +35,51 @@ export class DonationListComponent implements OnInit {
   constructor(
     private donationService: DonationService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
     this.loadDonations();
+    // Set up real-time refresh every 30 seconds
+    this.refreshSubscription = interval(30000).subscribe(() => {
+      this.loadDonations();
+    });
+
+    // Listen for new donation notifications
+    this.notificationService.notifications$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(notifications => {
+        // Check if there are new donation notifications
+        const donationNotifications = notifications.filter(n => n.type === 'donation_created');
+        if (donationNotifications.length > 0) {
+          // Refresh donations to show new ones
+          this.loadDonations();
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadDonations(): void {
     this.isLoading = true;
     this.donationService.getDonations(this.filters).subscribe({
       next: (donations) => {
+        console.log('Donations loaded:', donations);
         this.donations = donations;
         this.filteredDonations = donations;
         this.isLoading = false;
       },
       error: (error) => {
+        console.error('Error loading donations:', error);
         this.isLoading = false;
-        this.snackBar.open('Failed to load donations', 'Close', {
+        this.snackBar.open('Failed to load donations. Please try again.', 'Close', {
           duration: 3000,
           panelClass: ['error-snackbar']
         });

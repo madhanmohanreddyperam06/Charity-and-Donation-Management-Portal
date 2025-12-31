@@ -1,0 +1,239 @@
+// Custom Theme Variables
+$custom-primary: #2E7D32;      // Deep Green
+$custom-primary-light: #60ad5e;
+$custom-primary-dark: #005005;
+
+$custom-accent: #FF6B35;        // Orange
+$custom-accent-light: #ff9d6c;
+$custom-accent-dark: #c43f00;
+
+$custom-warn: #F44336;          // Red
+$custom-warn-light: #ff7961;
+$custom-warn-dark: #ba000d;
+
+// Background and Surface Colors
+$custom-background: #FAFAFA;
+$custom-surface: #FFFFFF;
+
+// Text Colors
+$custom-on-primary: #FFFFFF;
+$custom-on-accent: #FFFFFF;
+$custom-on-warn: #FFFFFF;
+$custom-on-surface: #212121;
+$custom-on-background: #212121;
+
+// Import Angular Material Theme Functions
+@use '@angular/material' as mat;
+
+// Define Custom Theme
+$custom-theme: mat.define-light-theme((
+  color: (
+    primary: mat.define-palette($custom-primary, 500, 100, 900),
+    accent: mat.define-palette($custom-accent, 500, 100, 900),
+    warn: mat.define-palette($custom-warn, 500, 100, 900),
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// Include Theme Styles
+@include mat.all-component-themes($custom-theme);
+
+// Custom Global Styles
+:root {
+  --primary-color: #{$custom-primary};
+  --accent-color: #{$custom-accent};
+  --warn-color: #{$custom-warn};
+  --background-color: #{$custom-background};
+  --surface-color: #{$custom-surface};
+}
+
+body {
+  background-color: $custom-background;
+  color: $custom-on-surface;
+  margin: 0;
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+// Custom Component Overrides
+.main-header {
+  background: linear-gradient(135deg, $custom-primary 0%, $custom-primary-dark 100%);
+}
+
+.profile-avatar {
+  background: linear-gradient(135deg, $custom-primary 0%, $custom-accent 100%);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba($custom-primary, 0.15);
+}
+
+.nav-button:hover {
+  background: rgba($custom-primary, 0.1) !important;
+  color: $custom-primary !important;
+}
+
+.logout-btn:hover {
+  background: rgba($custom-warn, 0.2) !important;
+  border-color: $custom-warn !important;
+  color: $custom-warn !important;
+}
+
+// Custom Button Styles
+.mat-raised-button.mat-primary {
+  background-color: $custom-primary;
+}
+
+.mat-stroked-button.mat-primary {
+  border-color: $custom-primary;
+  color: $custom-primary;
+}
+
+.mat-raised-button.mat-accent {
+  background-color: $custom-accent;
+}
+
+.mat-stroked-button.mat-accent {
+  border-color: $custom-accent;
+  color: $custom-accent;
+}
+
+// Form Field Styles
+.mat-form-field-appearance-outline .mat-focused .mat-form-field-outline-thick {
+  color: $custom-primary;
+}
+
+.mat-form-field-appearance-outline.mat-focused .mat-form-field-label {
+  color: $custom-primary;
+}
+
+.mat-checkbox-checked .mat-checkbox-background {
+  background-color: $custom-primary;
+}
+
+.mat-radio-button.mat-accent .mat-radio-outer-circle {
+  border-color: $custom-primary;
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle {
+  background-color: $custom-primary;
+}
+
+.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+  background-color: rgba($custom-primary, 0.26);
+}
+
+// Card Styles
+.mat-card {
+  background-color: $custom-surface;
+  color: $custom-on-surface;
+}
+
+.mat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+// Progress Spinner
+.mat-progress-spinner circle {
+  stroke: $custom-primary;
+}
+
+// Chip Styles
+.mat-chip.mat-primary {
+  background-color: $custom-primary;
+  color: $custom-on-primary;
+}
+
+.mat-chip.mat-accent {
+  background-color: $custom-accent;
+  color: $custom-on-accent;
+}
+
+.mat-chip.mat-warn {
+  background-color: $custom-warn;
+  color: $custom-on-warn;
+}
+
+// Tab Styles
+.mat-tab-group.mat-primary .mat-ink-bar {
+  background-color: $custom-primary;
+}
+
+.mat-tab-label.mat-tab-label-active {
+  color: $custom-primary;
+}
+
+// Dialog Styles
+.mat-dialog-container {
+  background-color: $custom-surface;
+  color: $custom-on-surface;
+}
+
+// Menu Styles
+.mat-menu-item:hover {
+  background-color: rgba($custom-primary, 0.04);
+}
+
+.mat-menu-item.mat-accent {
+  color: $custom-accent;
+}
+
+// Tooltip Styles
+.mat-tooltip {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+// Snackbar Styles
+.mat-snack-bar-container {
+  background-color: #323232;
+  color: white;
+}
+
+.mat-snack-bar-container.mat-success-snackbar {
+  background-color: $custom-primary;
+}
+
+.mat-snack-bar-container.mat-error-snackbar {
+  background-color: $custom-warn;
+}
+
+.mat-snack-bar-container.mat-info-snackbar {
+  background-color: $custom-accent;
+}
+
+// Table Styles
+.mat-table {
+  background: $custom-surface;
+}
+
+.mat-header-cell {
+  color: $custom-primary;
+  font-weight: 600;
+}
+
+.mat-row:hover {
+  background-color: rgba($custom-primary, 0.04);
+}
+
+// Paginator Styles
+.mat-paginator {
+  background-color: $custom-surface;
+}
+
+.mat-select-value {
+  color: $custom-on-surface;
+}
+
+.mat-select-panel {
+  background-color: $custom-surface;
+}
+
+.mat-option:hover {
+  background-color: rgba($custom-primary, 0.04);
+}
+
+.mat-option.mat-selected {
+  background-color: rgba($custom-primary, 0.12);
+  color: $custom-primary;
+}

@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { DonationService } from '../../services/donation.service';
 import { AuthService } from '../../services/auth.service';
 import { Donation } from '../../models/donation.model';
+import { DonationDialogComponent, DonationDialogData } from '../donation-dialog/donation-dialog.component';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-ngo-dashboard',
@@ -12,7 +15,7 @@ import { Donation } from '../../models/donation.model';
 })
 export class NgoDashboardComponent implements OnInit {
   myDonations: Donation[] = [];
-  isLoading = true;
+  isLoading = false;
   currentUser: any = null;
   stats = {
     totalDonations: 0,
@@ -25,7 +28,9 @@ export class NgoDashboardComponent implements OnInit {
     private router: Router,
     private donationService: DonationService,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -38,27 +43,20 @@ export class NgoDashboardComponent implements OnInit {
   }
 
   loadMyDonations(): void {
-    this.isLoading = true;
-    // Mock data for now - in real implementation, filter by NGO ID
-    const mockDonations: Donation[] = [
-      {
-        id: 1,
-        ngo_id: this.currentUser.id,
-        donation_type: 'food',
-        quantity_or_amount: 100,
-        location: 'New York',
-        pickup_date_time: '2024-01-15T10:00:00Z',
-        status: 'Pending',
-        priority: 'medium',
-        description: 'Food items for homeless shelter',
-        ngo_name: this.currentUser.name,
-        created_at: new Date().toISOString()
+    this.donationService.getDonationsByNgo(this.currentUser.id).subscribe({
+      next: (donations) => {
+        console.log('NGO Donations loaded:', donations);
+        this.myDonations = donations;
+        this.calculateStats();
+      },
+      error: (error) => {
+        console.error('Error loading NGO donations:', error);
+        this.snackBar.open('Failed to load donations. Please try again.', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
       }
-    ];
-
-    this.myDonations = mockDonations;
-    this.calculateStats();
-    this.isLoading = false;
+    });
   }
 
   calculateStats(): void {
@@ -69,7 +67,32 @@ export class NgoDashboardComponent implements OnInit {
   }
 
   createNewDonation(): void {
-    this.router.navigate(['/donations/create']);
+    const dialogRef = this.dialog.open(DonationDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      data: { mode: 'create' },
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Dialog closed with result:', result);
+        // Add to new donation to list immediately
+        if (result.id) {
+          this.myDonations.unshift(result);
+          this.calculateStats();
+          
+          // Send notification to all donors about new donation
+          this.notificationService.addDonationCreatedNotification(
+            this.currentUser.name,
+            result.description || `${result.donation_type} donation`,
+            result.id
+          );
+        }
+        // Also refresh from server to get latest data
+        this.loadMyDonations();
+      }
+    });
   }
 
   viewDonationDetails(id: number): void {
@@ -77,7 +100,37 @@ export class NgoDashboardComponent implements OnInit {
   }
 
   editDonation(id: number): void {
-    this.router.navigate(['/donations', id, 'edit']);
+    const donation = this.myDonations.find(d => d.id === id);
+    if (!donation) {
+      this.snackBar.open('Donation not found', 'Close', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    // Only allow editing pending donations
+    if (donation.status !== 'Pending') {
+      this.snackBar.open('Only pending donations can be edited', 'Close', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    const dialogRef = this.dialog.open(DonationDialogComponent, {
+      width: '600px',
+      maxWidth: '90vw',
+      data: { mode: 'edit', donation: donation },
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Refresh donations list to show the updated donation
+        this.loadMyDonations();
+      }
+    });
   }
 
   cancelDonation(id: number): void {

@@ -3,66 +3,98 @@ import { RowDataPacket, ResultSetHeader } from 'mysql2';
 
 const router = express.Router();
 
+// In-memory storage for donations (in production, this would be a database)
+let donations: any[] = [
+    {
+        id: 1,
+        ngo_id: 2,
+        donation_type: 'food',
+        quantity_or_amount: 100,
+        location: 'New York',
+        pickup_date_time: '2024-01-15T10:00:00Z',
+        status: 'Pending',
+        priority: 'medium',
+        description: 'Food items for homeless shelter',
+        ngo_name: 'Helping Hands NGO',
+        ngo_email: 'ngo@example.com',
+        contact_info: '555-0123',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 2,
+        ngo_id: 2,
+        donation_type: 'education',
+        quantity_or_amount: 50,
+        location: 'Boston',
+        pickup_date_time: '2024-01-20T14:00:00Z',
+        status: 'Pending',
+        priority: 'high',
+        description: 'School supplies for underprivileged children',
+        ngo_name: 'Helping Hands NGO',
+        ngo_email: 'ngo@example.com',
+        contact_info: '555-0123',
+        created_at: new Date().toISOString()
+    },
+    {
+        id: 3,
+        ngo_id: 3,
+        donation_type: 'medical',
+        quantity_or_amount: 25,
+        location: 'Chicago',
+        pickup_date_time: '2024-01-18T09:00:00Z',
+        status: 'Confirmed',
+        priority: 'urgent',
+        description: 'Medical supplies for rural clinic',
+        ngo_name: 'Medical Aid NGO',
+        ngo_email: 'medical@example.com',
+        contact_info: '555-0456',
+        created_at: new Date().toISOString()
+    }
+];
+
 // Get all donations (with filtering)
 router.get('/', async (req, res) => {
     try {
-        const { donation_type, location, date_from, date_to, status } = req.query;
+        const { donation_type, location, date_from, date_to, status, ngo_id } = req.query;
         
-        // Build query conditions
-        let whereClause = 'WHERE d.status != "Cancelled"';
-        const params: any[] = [];
-
+        // Start with all donations
+        let filteredDonations = [...donations];
+        
+        // Apply filters
         if (donation_type) {
-            whereClause += ' AND d.donation_type = ?';
-            params.push(donation_type);
+            filteredDonations = filteredDonations.filter(d => d.donation_type === donation_type);
         }
-
+        
         if (location) {
-            whereClause += ' AND d.location LIKE ?';
-            params.push(`%${location}%`);
+            filteredDonations = filteredDonations.filter(d => 
+                d.location.toLowerCase().includes(location.toString().toLowerCase())
+            );
         }
-
+        
         if (date_from) {
-            whereClause += ' AND d.pickup_date_time >= ?';
-            params.push(date_from);
+            filteredDonations = filteredDonations.filter(d => 
+                new Date(d.pickup_date_time) >= new Date(date_from as string)
+            );
         }
-
+        
         if (date_to) {
-            whereClause += ' AND d.pickup_date_time <= ?';
-            params.push(date_to);
+            filteredDonations = filteredDonations.filter(d => 
+                new Date(d.pickup_date_time) <= new Date(date_to as string)
+            );
         }
-
+        
         if (status) {
-            whereClause += ' AND d.status = ?';
-            params.push(status);
+            filteredDonations = filteredDonations.filter(d => d.status === status);
         }
-
-        const query = `
-            SELECT d.*, u.name as ngo_name, u.email as ngo_email 
-            FROM donations d 
-            LEFT JOIN users u ON d.ngo_id = u.id 
-            ${whereClause} 
-            ORDER BY d.created_at DESC
-        `;
-
-        // Mock response for now
-        const mockDonations = [
-            {
-                id: 1,
-                ngo_id: 2,
-                donation_type: 'food',
-                quantity_or_amount: 100,
-                location: 'New York',
-                pickup_date_time: '2024-01-15T10:00:00Z',
-                status: 'Pending',
-                priority: 'medium',
-                description: 'Food items for homeless shelter',
-                ngo_name: 'Helping Hands NGO',
-                created_at: new Date().toISOString()
-            }
-        ];
-
-        res.json(mockDonations);
+        
+        if (ngo_id) {
+            filteredDonations = filteredDonations.filter(d => d.ngo_id === parseInt(ngo_id as string));
+        }
+        
+        // Sort by created_at descending
+        filteredDonations.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        
+        res.json(filteredDonations);
 
     } catch (error: any) {
         console.error('Get donations error:', error);
@@ -74,32 +106,14 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-
-        const query = `
-            SELECT d.*, u.name as ngo_name, u.email as ngo_email, u.contact_info 
-            FROM donations d 
-            LEFT JOIN users u ON d.ngo_id = u.id 
-            WHERE d.id = ?
-        `;
-
-        // Mock response
-        const mockDonation = {
-            id: parseInt(id),
-            ngo_id: 2,
-            donation_type: 'food',
-            quantity_or_amount: 100,
-            location: 'New York',
-            pickup_date_time: '2024-01-15T10:00:00Z',
-            status: 'Pending',
-            priority: 'medium',
-            description: 'Food items for homeless shelter',
-            ngo_name: 'Helping Hands NGO',
-            ngo_email: 'ngo@example.com',
-            contact_info: '555-0123',
-            created_at: new Date().toISOString()
-        };
-
-        res.json(mockDonation);
+        
+        const donation = donations.find(d => d.id === parseInt(id));
+        
+        if (!donation) {
+            return res.status(404).json({ error: 'Donation not found' });
+        }
+        
+        res.json(donation);
 
     } catch (error: any) {
         console.error('Get donation error:', error);
@@ -118,7 +132,10 @@ router.post('/', async (req, res) => {
             pickup_date_time, 
             priority = 'medium',
             description,
-            images 
+            images,
+            ngo_name,
+            ngo_email,
+            contact_info
         } = req.body;
 
         // Validation
@@ -128,9 +145,9 @@ router.post('/', async (req, res) => {
             });
         }
 
-        if (!['food', 'funds', 'clothes', 'other'].includes(donation_type)) {
+        if (!['food', 'funds', 'clothes', 'education', 'medical', 'shelter', 'toys', 'books', 'electronics', 'other'].includes(donation_type)) {
             return res.status(400).json({ 
-                error: 'Invalid donation type. Must be: food, funds, clothes, or other' 
+                error: 'Invalid donation type. Must be one of: food, funds, clothes, education, medical, shelter, toys, books, electronics, other' 
             });
         }
 
@@ -147,9 +164,9 @@ router.post('/', async (req, res) => {
             });
         }
 
-        // Mock creation
+        // Create new donation with unique ID
         const newDonation = {
-            id: Date.now(),
+            id: Math.max(...donations.map(d => d.id), 0) + 1,
             ngo_id,
             donation_type,
             quantity_or_amount,
@@ -159,13 +176,19 @@ router.post('/', async (req, res) => {
             priority,
             description,
             images,
+            ngo_name: ngo_name || 'NGO Name',
+            ngo_email: ngo_email || 'ngo@example.com',
+            contact_info: contact_info || '555-0123',
             created_at: new Date().toISOString()
         };
 
-        res.status(201).json({
-            message: 'Donation created successfully',
-            donation: newDonation
-        });
+        // Save to in-memory storage
+        donations.push(newDonation);
+        
+        console.log('New donation created:', newDonation);
+        console.log('Total donations in storage:', donations.length);
+
+        res.status(201).json(newDonation);
 
     } catch (error: any) {
         console.error('Create donation error:', error);

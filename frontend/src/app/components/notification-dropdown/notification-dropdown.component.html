@@ -1,0 +1,57 @@
+<div class="notification-dropdown" *ngIf="currentUser">
+  <!-- Notification Button -->
+  <button mat-icon-button class="notification-btn" (click)="toggleDropdown()" 
+          matTooltip="Notifications" [matTooltipPosition]="'below'">
+    <mat-icon>notifications</mat-icon>
+    <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
+  </button>
+
+  <!-- Dropdown Panel -->
+  <div class="notification-panel" *ngIf="isOpen" (click)="onBackdropClick()">
+    <div class="panel-header">
+      <h3>Notifications</h3>
+      <div class="panel-actions">
+        <button mat-icon-button (click)="markAllAsRead()" 
+                matTooltip="Mark all as read" 
+                [disabled]="notificationCount === 0">
+          <mat-icon>done_all</mat-icon>
+        </button>
+        <button mat-icon-button (click)="clearAll()" 
+                matTooltip="Clear all" 
+                [disabled]="notifications.length === 0">
+          <mat-icon>clear_all</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="notification-list">
+      <div *ngIf="notifications.length === 0" class="empty-state">
+        <mat-icon>notifications_none</mat-icon>
+        <p>No notifications</p>
+      </div>
+
+      <div class="notification-item" 
+           *ngFor="let notification of notifications; trackBy: notification.id"
+           [class.unread]="!notification.read"
+           (click)="markAsRead(notification.id)">
+        <div class="notification-icon">
+          <mat-icon [color]="getNotificationColor(notification.type)">
+            {{ getNotificationIcon(notification.type) }}
+          </mat-icon>
+        </div>
+        
+        <div class="notification-content">
+          <div class="notification-header">
+            <span class="notification-title">{{ notification.title }}</span>
+            <span class="notification-time">{{ formatTime(notification.timestamp) }}</span>
+          </div>
+          <div class="notification-message">{{ notification.message }}</div>
+          <div class="notification-meta" *ngIf="notification.fromUser">
+            <span class="from-user">From: {{ notification.fromUser }}</span>
+            <mat-chip [color]="'primary'" selected>{{ notification.fromUserRole }}</mat-chip>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -10,6 +10,9 @@ import { DonorDashboardComponent } from './components/donor-dashboard/donor-dash
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { LandingComponent } from './components/landing/landing.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { DonationCreateComponent } from './components/donation-create/donation-create.component';
+import { DonationEditComponent } from './components/donation-edit/donation-edit.component';
+import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
@@ -19,8 +22,11 @@ const routes: Routes = [
   { path: 'donations', component: DonationListComponent, canActivate: [AuthGuard] },
   { path: 'donations/:id', component: DonationDetailsComponent, canActivate: [AuthGuard] },
   { path: 'donations/:id/contribute', component: ContributionComponent, canActivate: [AuthGuard] },
+  { path: 'donations/create', component: DonationCreateComponent, canActivate: [AuthGuard] },
+  { path: 'donations/:id/edit', component: DonationEditComponent, canActivate: [AuthGuard] },
   { path: 'ngo/dashboard', component: NgoDashboardComponent, canActivate: [AuthGuard] },
   { path: 'donor/dashboard', component: DonorDashboardComponent, canActivate: [AuthGuard] },
+  { path: 'admin/dashboard', component: AdminDashboardComponent, canActivate: [AuthGuard] },
   { path: 'leaderboard', component: LeaderboardComponent, canActivate: [AuthGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: '/' }

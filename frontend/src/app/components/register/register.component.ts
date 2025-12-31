@@ -61,7 +61,18 @@ export class RegisterComponent implements OnInit {
             duration: 3000,
             panelClass: ['success-snackbar']
           });
-          this.router.navigate(['/donations']);
+          
+          // Redirect to appropriate dashboard based on user role
+          const userRole = this.registerForm.value.role;
+          if (userRole === 'Admin') {
+            this.router.navigate(['/admin/dashboard']);
+          } else if (userRole === 'NGO') {
+            this.router.navigate(['/ngo/dashboard']);
+          } else if (userRole === 'Donor') {
+            this.router.navigate(['/donor/dashboard']);
+          } else {
+            this.router.navigate(['/donations']); // Default fallback
+          }
         },
         error: (error) => {
           this.isLoading = false;

@@ -1,0 +1,62 @@
+// ========================================
+// THEME OPTIONS - Choose Your Favorite!
+// ========================================
+
+// OPTION 1: Nature Theme (Green & Orange) - CURRENTLY ACTIVE
+$nature-primary: #2E7D32;      // Deep Green
+$nature-accent: #FF6B35;       // Orange
+$nature-warn: #F44336;         // Red
+
+// OPTION 2: Ocean Theme (Blue & Teal)
+$ocean-primary: #1565C0;      // Deep Blue
+$ocean-accent: #00ACC1;       // Teal
+$ocean-warn: #FF5722;         // Deep Orange
+
+// OPTION 3: Sunset Theme (Purple & Pink)
+$sunset-primary: #7B1FA2;      // Deep Purple
+$sunset-accent: #E91E63;       // Pink
+$sunset-warn: #FF5722;         // Deep Orange
+
+// OPTION 4: Forest Theme (Green & Amber)
+$forest-primary: #388E3C;     // Green
+$forest-accent: #FFB300;      // Amber
+$forest-warn: #D32F2F;         // Red
+
+// OPTION 5: Corporate Theme (Navy & Gold)
+$corporate-primary: #1A237E;   // Navy Blue
+$corporate-accent: #FFC107;    // Gold
+$corporate-warn: #F44336;      // Red
+
+// OPTION 6: Modern Theme (Dark Blue & Coral)
+$modern-primary: #283593;     // Dark Blue
+$modern-accent: #FF7043;      // Coral
+$modern-warn: #E91E63;        // Pink
+
+// ========================================
+// HOW TO SWITCH THEMES:
+// ========================================
+/*
+To switch themes, follow these steps:
+
+1. Open: src/styles/custom-theme.scss
+2. Replace the color variables at the top with your chosen theme
+3. Example for Ocean Theme:
+
+$custom-primary: $ocean-primary;
+$custom-accent: $ocean-accent;
+$custom-warn: $ocean-warn;
+
+4. Save the file and restart your development server
+*/
+
+// ========================================
+// COLOR PREVIEW:
+// ========================================
+/*
+NATURE: 🌿 Green Primary + 🍊 Orange Accent
+OCEAN: 🌊 Blue Primary + 💧 Teal Accent  
+SUNSET: 🌅 Purple Primary + 🌸 Pink Accent
+FOREST: 🌲 Green Primary + ⭐ Amber Accent
+CORPORATE: 💼 Navy Primary + 🏆 Gold Accent
+MODERN: 🎯 Dark Blue Primary + 🪸 Coral Accent
+*/

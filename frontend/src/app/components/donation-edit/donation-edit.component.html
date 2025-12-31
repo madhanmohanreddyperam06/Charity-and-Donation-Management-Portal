@@ -1,0 +1,114 @@
+<div class="donation-edit-container">
+  <div class="header-section">
+    <h1>Edit Donation Request</h1>
+    <p>Update the details of your donation request</p>
+  </div>
+
+  <mat-card class="form-card">
+    <form [formGroup]="donationForm" (ngSubmit)="onSubmit()">
+      <mat-card-content>
+        <div class="form-grid">
+          <!-- Donation Type -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Donation Type</mat-label>
+            <mat-select formControlName="donation_type">
+              <mat-option value="">Select donation type</mat-option>
+              <mat-option *ngFor="let type of donationTypes" [value]="type">
+                <mat-icon>{{getDonationTypeIcon(type)}}</mat-icon>
+                <span>{{type | titlecase}}</span>
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="donationForm.get('donation_type')?.hasError('required')">
+              Donation type is required
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Quantity/Amount -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Quantity/Amount</mat-label>
+            <input matInput 
+                   type="number" 
+                   formControlName="quantity_or_amount"
+                   placeholder="Enter quantity or amount">
+            <mat-hint>For items: quantity, For funds: amount in USD</mat-hint>
+            <mat-error *ngIf="donationForm.get('quantity_or_amount')?.hasError('required')">
+              Quantity/Amount is required
+            </mat-error>
+            <mat-error *ngIf="donationForm.get('quantity_or_amount')?.hasError('min')">
+              Must be greater than 0
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Location -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Pickup Location</mat-label>
+            <input matInput 
+                   formControlName="location"
+                   placeholder="Enter pickup location">
+            <mat-error *ngIf="donationForm.get('location')?.hasError('required')">
+              Location is required
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Pickup Date & Time -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Pickup Date & Time</mat-label>
+            <input matInput 
+                   type="datetime-local" 
+                   formControlName="pickup_date_time">
+            <mat-error *ngIf="donationForm.get('pickup_date_time')?.hasError('required')">
+              Pickup date and time is required
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Priority -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Priority</mat-label>
+            <mat-select formControlName="priority">
+              <mat-option *ngFor="let priority of priorities" [value]="priority">
+                <span>{{priority | titlecase}}</span>
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="donationForm.get('priority')?.hasError('required')">
+              Priority is required
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Description -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description</mat-label>
+            <textarea matInput 
+                      formControlName="description"
+                      rows="4"
+                      placeholder="Provide detailed description of the donation request">
+            </textarea>
+            <mat-hint>Minimum 10 characters</mat-hint>
+            <mat-error *ngIf="donationForm.get('description')?.hasError('required')">
+              Description is required
+            </mat-error>
+            <mat-error *ngIf="donationForm.get('description')?.hasError('minlength')">
+              Description must be at least 10 characters
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-stroked-button type="button" (click)="cancel()" [disabled]="isLoading">
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!donationForm.valid || isLoading">
+          <mat-icon>save</mat-icon>
+          Update Donation
+        </button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+    <p>Updating donation request...</p>
+  </div>
+</div>

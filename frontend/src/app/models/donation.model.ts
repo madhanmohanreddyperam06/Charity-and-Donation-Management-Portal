@@ -1,7 +1,7 @@
 export interface Donation {
   id: number;
   ngo_id: number;
-  donation_type: 'food' | 'funds' | 'clothes' | 'other';
+  donation_type: 'food' | 'funds' | 'clothes' | 'education' | 'medical' | 'shelter' | 'toys' | 'books' | 'electronics' | 'other';
   quantity_or_amount: number;
   location: string;
   pickup_date_time: string;
@@ -18,7 +18,7 @@ export interface Donation {
 
 export interface CreateDonationRequest {
   ngo_id: number;
-  donation_type: 'food' | 'funds' | 'clothes' | 'other';
+  donation_type: 'food' | 'funds' | 'clothes' | 'education' | 'medical' | 'shelter' | 'toys' | 'books' | 'electronics' | 'other';
   quantity_or_amount: number;
   location: string;
   pickup_date_time: string;

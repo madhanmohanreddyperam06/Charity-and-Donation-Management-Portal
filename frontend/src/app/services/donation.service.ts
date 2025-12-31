@@ -7,7 +7,7 @@ import { Donation, CreateDonationRequest, Contribution, CreateContributionReques
   providedIn: 'root'
 })
 export class DonationService {
-  private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = 'http://localhost:3000';
 
   constructor(private http: HttpClient) { }
 
@@ -22,27 +22,35 @@ export class DonationService {
   // Donation methods
   getDonations(filters?: any): Observable<Donation[]> {
     const headers = this.getAuthHeaders();
-    return this.http.get<Donation[]>(`${this.apiUrl}/donations`, { headers, params: filters });
+    return this.http.get<Donation[]>(`${this.apiUrl}/api/donations`, { headers, params: filters });
+  }
+
+  getDonationsByNgo(ngoId: number): Observable<Donation[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<Donation[]>(`${this.apiUrl}/api/donations`, { 
+      headers, 
+      params: { ngo_id: ngoId.toString() } 
+    });
   }
 
   getDonationById(id: number): Observable<Donation> {
     const headers = this.getAuthHeaders();
-    return this.http.get<Donation>(`${this.apiUrl}/donations/${id}`, { headers });
+    return this.http.get<Donation>(`${this.apiUrl}/api/donations/${id}`, { headers });
   }
 
   createDonation(donation: CreateDonationRequest): Observable<Donation> {
     const headers = this.getAuthHeaders();
-    return this.http.post<Donation>(`${this.apiUrl}/donations`, donation, { headers });
+    return this.http.post<Donation>(`${this.apiUrl}/api/donations`, donation, { headers });
   }
 
   updateDonation(id: number, updates: Partial<Donation>): Observable<Donation> {
     const headers = this.getAuthHeaders();
-    return this.http.put<Donation>(`${this.apiUrl}/donations/${id}`, updates, { headers });
+    return this.http.put<Donation>(`${this.apiUrl}/api/donations/${id}`, updates, { headers });
   }
 
   cancelDonation(id: number): Observable<Donation> {
     const headers = this.getAuthHeaders();
-    return this.http.delete<Donation>(`${this.apiUrl}/donations/${id}`, { headers });
+    return this.http.delete<Donation>(`${this.apiUrl}/api/donations/${id}`, { headers });
   }
 
   // Contribution methods

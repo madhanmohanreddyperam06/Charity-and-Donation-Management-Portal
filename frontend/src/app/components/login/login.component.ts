@@ -40,7 +40,18 @@ export class LoginComponent implements OnInit {
             duration: 3000,
             panelClass: ['success-snackbar']
           });
-          this.router.navigate(['/donations']);
+          
+          // Redirect to appropriate dashboard based on user role
+          const user = this.authService.getCurrentUser();
+          if (user?.role === 'Admin') {
+            this.router.navigate(['/admin/dashboard']);
+          } else if (user?.role === 'NGO') {
+            this.router.navigate(['/ngo/dashboard']);
+          } else if (user?.role === 'Donor') {
+            this.router.navigate(['/donor/dashboard']);
+          } else {
+            this.router.navigate(['/donations']); // Default fallback
+          }
         },
         error: (error) => {
           this.isLoading = false;

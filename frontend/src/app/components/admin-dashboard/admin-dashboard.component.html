@@ -1,0 +1,154 @@
+<div class="admin-dashboard-container">
+  <div class="header-section">
+    <h1>Admin Dashboard</h1>
+    <p>System overview and management</p>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <div class="dashboard-content" *ngIf="!isLoading">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-card-header>
+          <mat-card-title>Total Users</mat-card-title>
+          <mat-icon class="stat-icon">people</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stat-value">{{ stats.totalUsers }}</div>
+          <div class="stat-label">Registered users</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-header>
+          <mat-card-title>Total Donations</mat-card-title>
+          <mat-icon class="stat-icon">volunteer_activism</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stat-value">{{ stats.totalDonations }}</div>
+          <div class="stat-label">Active donation requests</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-header>
+          <mat-card-title>Total Contributions</mat-card-title>
+          <mat-icon class="stat-icon">favorite</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stat-value">{{ stats.totalContributions }}</div>
+          <div class="stat-label">Completed contributions</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-header>
+          <mat-card-title>Total Amount</mat-card-title>
+          <mat-icon class="stat-icon">attach_money</mat-icon>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stat-value">{{ formatCurrency(stats.totalAmount) }}</div>
+          <div class="stat-label">Total value contributed</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions-section">
+      <button mat-raised-button color="primary" (click)="viewAllUsers()">
+        <mat-icon>people</mat-icon>
+        Manage Users
+      </button>
+      <button mat-raised-button color="accent" (click)="viewAllDonations()">
+        <mat-icon>list_alt</mat-icon>
+        View All Donations
+      </button>
+      <button mat-raised-button color="warn" (click)="viewReports()">
+        <mat-icon>assessment</mat-icon>
+        Reports
+      </button>
+      <button mat-stroked-button (click)="manageSettings()">
+        <mat-icon>settings</mat-icon>
+        System Settings
+      </button>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="activity-grid">
+      <!-- Recent Users -->
+      <mat-card class="activity-card">
+        <mat-card-header>
+          <mat-card-title>Recent Users</mat-card-title>
+          <button mat-icon-button (click)="viewAllUsers()">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="user-list">
+            <div class="user-item" *ngFor="let user of recentUsers">
+              <div class="user-info">
+                <div class="user-name">{{ user.name }}</div>
+                <div class="user-email">{{ user.email }}</div>
+              </div>
+              <div class="user-meta">
+                <mat-chip [color]="getRoleColor(user.role)" selected>{{ user.role }}</mat-chip>
+                <div class="user-date">{{ formatDate(user.created_at) }}</div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Recent Donations -->
+      <mat-card class="activity-card">
+        <mat-card-header>
+          <mat-card-title>Recent Donations</mat-card-title>
+          <button mat-icon-button (click)="viewAllDonations()">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="donation-list">
+            <div class="donation-item" *ngFor="let donation of recentDonations">
+              <div class="donation-info">
+                <div class="donation-title">{{ donation.title }}</div>
+                <div class="donation-ngo">{{ donation.ngo_name }}</div>
+              </div>
+              <div class="donation-meta">
+                <mat-chip [color]="getStatusColor(donation.status)" selected>{{ donation.status }}</mat-chip>
+                <div class="donation-date">{{ formatDate(donation.created_at) }}</div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Top Contributors -->
+      <mat-card class="activity-card">
+        <mat-card-header>
+          <mat-card-title>Top Contributors</mat-card-title>
+          <button mat-icon-button>
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="contributor-list">
+            <div class="contributor-item" *ngFor="let contributor of topContributors; let i = index">
+              <div class="contributor-rank">#{{ i + 1 }}</div>
+              <div class="contributor-info">
+                <div class="contributor-name">{{ contributor.name }}</div>
+                <div class="contributor-stats">
+                  {{ contributor.contributions }} contributions • {{ formatCurrency(contributor.amount) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -14,6 +14,14 @@ import { ContributionComponent } from './components/contribution/contribution.co
 import { NgoDashboardComponent } from './components/ngo-dashboard/ngo-dashboard.component';
 import { DonorDashboardComponent } from './components/donor-dashboard/donor-dashboard.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
+import { LandingComponent } from './components/landing/landing.component';
+import { HeaderComponent } from './components/header/header.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { DonationCreateComponent } from './components/donation-create/donation-create.component';
+import { DonationEditComponent } from './components/donation-edit/donation-edit.component';
+import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
+import { DonationDialogComponent } from './components/donation-dialog/donation-dialog.component';
+// import { NotificationDropdownComponent } from './components/notification-dropdown/notification-dropdown.component';
 
 // Angular Material Modules
 import { MatCardModule } from '@angular/material/card';
@@ -41,9 +49,6 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
-import { LandingComponent } from './components/landing/landing.component';
-import { HeaderComponent } from './components/header/header.component';
-import { ProfileComponent } from './components/profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +63,12 @@ import { ProfileComponent } from './components/profile/profile.component';
     LeaderboardComponent,
     LandingComponent,
     HeaderComponent,
-    ProfileComponent
+    ProfileComponent,
+    DonationCreateComponent,
+    DonationEditComponent,
+    AdminDashboardComponent,
+    DonationDialogComponent
+    // NotificationDropdownComponent
   ],
   imports: [
     BrowserModule,

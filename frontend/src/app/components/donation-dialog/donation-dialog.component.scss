@@ -1,0 +1,159 @@
+.dialog-container {
+  padding: 0;
+  min-width: 500px;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  color: white;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.header-icon {
+  font-size: 1.8rem;
+}
+
+.close-btn {
+  color: white;
+}
+
+.close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dialog-content {
+  padding: 24px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.donation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.full-width {
+  flex: 1;
+}
+
+.custom-input {
+  font-size: 16px;
+}
+
+.input-prefix {
+  color: var(--primary-color);
+  opacity: 0.7;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+  color: var(--primary-color);
+}
+
+.mat-form-field-appearance-outline .mat-form-field-label {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.mat-form-field-appearance-outline.mat-focused .mat-form-field-label {
+  color: var(--primary-color);
+}
+
+.mat-select-value,
+.mat-input-element {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.mat-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mat-error {
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px 20px;
+  border-top: 1px solid #e0e0e0;
+  background-color: #fafafa;
+}
+
+.dialog-actions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Priority colors helper functions
+.priority-urgent {
+  color: #f44336;
+}
+
+.priority-high {
+  color: #ff9800;
+}
+
+.priority-medium {
+  color: #2196f3;
+}
+
+.priority-low {
+  color: #4caf50;
+}
+
+// Responsive design
+@media (max-width: 600px) {
+  .dialog-container {
+    min-width: 90vw;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .dialog-header {
+    padding: 16px 20px 12px;
+  }
+  
+  .dialog-content {
+    padding: 20px;
+  }
+  
+  .dialog-actions {
+    padding: 12px 20px 16px;
+    flex-direction: column;
+  }
+  
+  .dialog-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}

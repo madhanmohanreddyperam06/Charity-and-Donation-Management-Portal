@@ -8,9 +8,9 @@
 
     <!-- Navigation Menu -->
     <nav class="header-nav">
-      <button mat-button class="nav-button" routerLink="/">
-        <mat-icon>home</mat-icon>
-        <span>Home</span>
+      <button mat-button class="nav-button" [routerLink]="getDashboardRoute()">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
       </button>
       
       <button mat-button class="nav-button" routerLink="/donations">
@@ -31,11 +31,6 @@
 
     <!-- User Actions -->
     <div class="header-actions">
-      <button mat-icon-button class="notification-btn" matTooltip="Notifications">
-        <mat-icon>notifications</mat-icon>
-        <span class="notification-badge">3</span>
-      </button>
-      
       <button mat-stroked-button color="warn" class="logout-btn" (click)="logout()">
         <mat-icon>logout</mat-icon>
         <span>Logout</span>

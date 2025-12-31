@@ -48,12 +48,7 @@
   <div class="donations-section">
     <h2>My Donations</h2>
     
-    <div *ngIf="isLoading" class="loading-container">
-      <mat-spinner></mat-spinner>
-      <p>Loading donations...</p>
-    </div>
-
-    <div *ngIf="!isLoading && myDonations.length === 0" class="empty-state">
+    <div *ngIf="myDonations.length === 0" class="empty-state">
       <mat-icon>inventory_2</mat-icon>
       <p>No donations created yet. Create your first donation request!</p>
       <button mat-raised-button color="primary" (click)="createNewDonation()">

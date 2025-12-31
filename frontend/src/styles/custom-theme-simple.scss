@@ -1,0 +1,245 @@
+/* Custom Theme with CSS Variables */
+:root {
+  /* Modern Theme Colors */
+  --primary-color: #283593;   /* Dark Blue */
+  --primary-light: #5f6dc9;
+  --primary-dark: #001970;
+  
+  --accent-color: #FF7043;    /* Coral */
+  --accent-light: #ffa673;
+  --accent-dark: #cc5a35;
+  
+  --warn-color: #E91E63;      /* Pink */
+  --warn-light: #ff5d8f;
+  --warn-dark: #b71c1c;
+  
+  --background-color: #FAFAFA;
+  --surface-color: #FFFFFF;
+  --text-color: #212121;
+  --text-secondary: #666666;
+}
+
+/* Global Styles */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  margin: 0;
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+/* Header Customization */
+.main-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+}
+
+/* Profile Avatar */
+.profile-avatar {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+}
+
+/* Navigation Buttons */
+.nav-button:hover {
+  background: rgba(40, 53, 147, 0.1) !important;
+  color: var(--primary-color) !important;
+}
+
+/* Logout Button */
+.logout-btn:hover {
+  background: rgba(233, 30, 99, 0.2) !important;
+  border-color: var(--warn-color) !important;
+  color: var(--warn-color) !important;
+}
+
+/* Stat Cards */
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(40, 53, 147, 0.15);
+}
+
+/* Custom Button Styles */
+.mat-raised-button.mat-primary {
+  background-color: var(--primary-color) !important;
+}
+
+.mat-stroked-button.mat-primary {
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+.mat-raised-button.mat-accent {
+  background-color: var(--accent-color) !important;
+}
+
+.mat-stroked-button.mat-accent {
+  border-color: var(--accent-color) !important;
+  color: var(--accent-color) !important;
+}
+
+/* Form Field Styles */
+.mat-form-field-appearance-outline .mat-focused .mat-form-field-outline-thick {
+  color: var(--primary-color) !important;
+}
+
+.mat-form-field-appearance-outline.mat-focused .mat-form-field-label {
+  color: var(--primary-color) !important;
+}
+
+.mat-checkbox-checked .mat-checkbox-background {
+  background-color: var(--primary-color) !important;
+}
+
+.mat-radio-button.mat-accent .mat-radio-outer-circle {
+  border-color: var(--primary-color) !important;
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle {
+  background-color: var(--primary-color) !important;
+}
+
+.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+  background-color: rgba(40, 53, 147, 0.26) !important;
+}
+
+/* Card Styles */
+.mat-card {
+  background-color: var(--surface-color) !important;
+  color: var(--text-color) !important;
+}
+
+.mat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Progress Spinner */
+.mat-progress-spinner circle {
+  stroke: var(--primary-color) !important;
+}
+
+/* Chip Styles */
+.mat-chip.mat-primary {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+
+.mat-chip.mat-accent {
+  background-color: var(--accent-color) !important;
+  color: white !important;
+}
+
+.mat-chip.mat-warn {
+  background-color: var(--warn-color) !important;
+  color: white !important;
+}
+
+/* Tab Styles */
+.mat-tab-group.mat-primary .mat-ink-bar {
+  background-color: var(--primary-color) !important;
+}
+
+.mat-tab-label.mat-tab-label-active {
+  color: var(--primary-color) !important;
+}
+
+/* Snackbar Styles */
+.mat-snack-bar-container.mat-success-snackbar {
+  background-color: var(--primary-color) !important;
+}
+
+.mat-snack-bar-container.mat-error-snackbar {
+  background-color: var(--warn-color) !important;
+}
+
+.mat-snack-bar-container.mat-info-snackbar {
+  background-color: var(--accent-color) !important;
+}
+
+/* Table Styles */
+.mat-header-cell {
+  color: var(--primary-color) !important;
+  font-weight: 600;
+}
+
+.mat-row:hover {
+  background-color: rgba(40, 53, 147, 0.04) !important;
+}
+
+/* Option Styles */
+.mat-option:hover {
+  background-color: rgba(40, 53, 147, 0.04) !important;
+}
+
+.mat-option.mat-selected {
+  background-color: rgba(40, 53, 147, 0.12) !important;
+  color: var(--primary-color) !important;
+}
+
+/* Select Panel */
+.mat-select-panel {
+  background-color: var(--surface-color) !important;
+}
+
+.mat-select-value {
+  color: var(--text-color) !important;
+}
+
+/* Paginator */
+.mat-paginator {
+  background-color: var(--surface-color) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .stat-card {
+    margin-bottom: 15px;
+  }
+  
+  .actions-section {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .actions-section button {
+    width: 100%;
+  }
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  color: white;
+}
+
+.loading-overlay p {
+  margin-top: 20px;
+  font-size: 1.1rem;
+}
+
+/* Utility Classes */
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.text-accent {
+  color: var(--accent-color) !important;
+}
+
+.text-warn {
+  color: var(--warn-color) !important;
+}
+
+.bg-primary {
+  background-color: var(--primary-color) !important;
+}
+
+.bg-accent {
+  background-color: var(--accent-color) !important;
+}
+
+.bg-warn {
+  background-color: var(--warn-color) !important;
+}

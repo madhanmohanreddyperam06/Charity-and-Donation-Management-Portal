@@ -19,6 +19,7 @@ export interface Donation {
 export interface CreateDonationRequest {
   ngo_id: number;
   donation_type: 'food' | 'funds' | 'clothes' | 'education' | 'medical' | 'shelter' | 'toys' | 'books' | 'electronics' | 'other';
+  ngo_name: string;
   quantity_or_amount: number;
   location: string;
   pickup_date_time: string;

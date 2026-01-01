@@ -54,6 +54,57 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Payment Method</mat-label>
+            <mat-select formControlName="payment_method" (selectionChange)="onPaymentMethodChange($event)">
+              <mat-option value="">Select payment method</mat-option>
+              <mat-option value="bank_account">Pay to Bank Account</mat-option>
+              <mat-option value="qr_code">Pay via QR</mat-option>
+            </mat-select>
+            <mat-icon matPrefix class="input-prefix">payment</mat-icon>
+            <mat-error *ngIf="contributionForm.get('payment_method')?.hasError('required')">
+              Payment method is required
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Payment Details Section -->
+          <div class="payment-details-section" *ngIf="showPaymentDetails">
+            <!-- Bank Account Details -->
+            <div class="bank-details" *ngIf="selectedPaymentMethod === 'bank_account'">
+              <mat-card class="payment-info-card">
+                <mat-card-header>
+                  <mat-card-title>Bank Account Details</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="bank-info">
+                    <p><strong>Account Number:</strong> 1234567890123456</p>
+                    <p><strong>IFSC Code:</strong> HDFC0001234</p>
+                    <p><strong>Account Holder:</strong> Charity Foundation</p>
+                    <p><strong>Bank Name:</strong> HDFC Bank</p>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+
+            <!-- QR Code Details -->
+            <div class="qr-details" *ngIf="selectedPaymentMethod === 'qr_code'">
+              <mat-card class="payment-info-card">
+                <mat-card-header>
+                  <mat-card-title>Scan QR Code</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="qr-code-container">
+                    <div class="mock-qr">
+                      <mat-icon class="qr-icon">qr_code_2</mat-icon>
+                      <p>Mock QR Code</p>
+                      <small>Scan with any payment app</small>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
             <mat-label>Notes (Optional)</mat-label>
             <textarea matInput formControlName="notes" 
                       placeholder="Any additional notes or instructions"

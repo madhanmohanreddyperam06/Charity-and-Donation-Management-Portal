@@ -38,6 +38,7 @@ export class DonationDialogComponent implements OnInit {
   ) {
     this.donationForm = this.fb.group({
       donation_type: ['', Validators.required],
+      ngo_name: ['', Validators.required],
       quantity_or_amount: ['', [Validators.required, Validators.min(1)]],
       location: ['', Validators.required],
       pickup_date_time: ['', Validators.required],
@@ -52,12 +53,20 @@ export class DonationDialogComponent implements OnInit {
     if (this.data.mode === 'edit' && this.data.donation) {
       this.donationForm.patchValue({
         donation_type: this.data.donation.donation_type,
+        ngo_name: this.data.donation.ngo_name,
         quantity_or_amount: this.data.donation.quantity_or_amount,
         location: this.data.donation.location,
         pickup_date_time: this.data.donation.pickup_date_time,
         priority: this.data.donation.priority,
         description: this.data.donation.description
       });
+    } else if (this.data.mode === 'create') {
+      // Pre-fill NGO name if available from current user
+      if (this.currentUser?.name) {
+        this.donationForm.patchValue({
+          ngo_name: this.currentUser.name
+        });
+      }
     }
   }
 
@@ -71,6 +80,7 @@ export class DonationDialogComponent implements OnInit {
     const formValue = this.donationForm.value;
     console.log('Individual fields:');
     console.log('- donation_type:', formValue.donation_type);
+    console.log('- ngo_name:', formValue.ngo_name);
     console.log('- quantity_or_amount:', formValue.quantity_or_amount);
     console.log('- location:', formValue.location);
     console.log('- pickup_date_time:', formValue.pickup_date_time);
@@ -84,6 +94,7 @@ export class DonationDialogComponent implements OnInit {
       const donationData: CreateDonationRequest = {
         ngo_id: this.currentUser.id,
         donation_type: formValue.donation_type?.trim() || 'food',
+        ngo_name: formValue.ngo_name?.trim() || '',
         quantity_or_amount: parseFloat(formValue.quantity_or_amount) || 0,
         location: formValue.location?.trim() || '',
         pickup_date_time: formValue.pickup_date_time || '',

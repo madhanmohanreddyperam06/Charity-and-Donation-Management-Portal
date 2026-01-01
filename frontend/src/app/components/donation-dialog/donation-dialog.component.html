@@ -30,6 +30,17 @@
 
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
+          <mat-label>NGO Name</mat-label>
+          <input matInput formControlName="ngo_name" placeholder="Enter your NGO name">
+          <mat-icon matPrefix class="input-prefix">business</mat-icon>
+          <mat-error *ngIf="donationForm.get('ngo_name')?.hasError('required')">
+            NGO name is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Quantity/Amount</mat-label>
           <input matInput type="number" formControlName="quantity_or_amount" 
                  placeholder="Enter quantity or amount" class="custom-input">

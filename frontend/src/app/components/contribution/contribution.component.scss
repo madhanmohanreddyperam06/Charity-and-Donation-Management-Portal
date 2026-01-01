@@ -119,3 +119,59 @@
     }
   }
 }
+
+// Payment Details Styles
+.payment-details-section {
+  margin: 20px 0;
+  
+  .payment-info-card {
+    margin-bottom: 16px;
+    border: 1px solid #e0e0e0;
+    
+    .bank-info {
+      p {
+        margin: 8px 0;
+        display: flex;
+        justify-content: space-between;
+        
+        strong {
+          color: #333;
+          min-width: 120px;
+        }
+      }
+    }
+    
+    .qr-code-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      
+      .mock-qr {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        background: #f9f9f9;
+        
+        .qr-icon {
+          font-size: 48px;
+          color: #666;
+          margin-bottom: 10px;
+        }
+        
+        p {
+          margin: 5px 0;
+          font-weight: 500;
+        }
+        
+        small {
+          color: #888;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}

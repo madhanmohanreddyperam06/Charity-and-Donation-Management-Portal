@@ -18,6 +18,8 @@ export class ContributionComponent implements OnInit {
   isSubmitting = false;
   donationId: number = 0;
   currentUser: any = null;
+  selectedPaymentMethod: string = '';
+  showPaymentDetails: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -29,6 +31,7 @@ export class ContributionComponent implements OnInit {
   ) {
     this.contributionForm = this.fb.group({
       contribution_amount: ['', [Validators.required, Validators.min(1)]],
+      payment_method: ['', Validators.required],
       notes: [''],
       scheduled_pickup_date_time: [''],
       pickup_address: ['']
@@ -119,6 +122,11 @@ export class ContributionComponent implements OnInit {
         }
       });
     }
+  }
+
+  onPaymentMethodChange(event: any): void {
+    this.selectedPaymentMethod = event.value;
+    this.showPaymentDetails = !!event.value;
   }
 
   goBack(): void {

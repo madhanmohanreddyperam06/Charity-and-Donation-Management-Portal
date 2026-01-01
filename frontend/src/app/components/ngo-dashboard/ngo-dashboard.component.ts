@@ -6,6 +6,7 @@ import { DonationService } from '../../services/donation.service';
 import { AuthService } from '../../services/auth.service';
 import { Donation, Contribution } from '../../models/donation.model';
 import { DonationDialogComponent, DonationDialogData } from '../donation-dialog/donation-dialog.component';
+import { ContributionDetailsDialogComponent } from '../contribution-details-dialog/contribution-details-dialog.component';
 import { NotificationService } from '../../services/notification.service';
 
 @Component({
@@ -238,7 +239,15 @@ export class NgoDashboardComponent implements OnInit {
   }
 
   viewContributionDetails(contributionId: number): void {
-    this.router.navigate(['/contributions', contributionId]);
+    // Find the contribution from received contributions
+    const contribution = this.receivedContributions.find(c => c.id === contributionId);
+    if (contribution) {
+      // Create a simple popup with contribution details
+      this.dialog.open(ContributionDetailsDialogComponent, {
+        width: '500px',
+        data: { contribution }
+      });
+    }
   }
 
   updateContributionStatus(contributionId: number, status: string): void {

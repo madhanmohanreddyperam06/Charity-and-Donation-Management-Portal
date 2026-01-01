@@ -1,0 +1,43 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>Contribution Details</h2>
+  
+  <mat-dialog-content>
+    <div class="contribution-details">
+      <div class="detail-row">
+        <strong>Donation:</strong>
+        <span>{{ data.contribution.donation_title || 'N/A' }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <strong>Donor:</strong>
+        <span>{{ data.contribution.donor?.name || 'Anonymous' }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <strong>Amount:</strong>
+        <span>${{ data.contribution.contribution_amount }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <strong>Date:</strong>
+        <span>{{ data.contribution.created_at | date:'short' }}</span>
+      </div>
+      
+      <div class="detail-row">
+        <strong>Status:</strong>
+        <span class="status-badge" [class]="'status-' + data.contribution.status.toLowerCase()">
+          {{ data.contribution.status }}
+        </span>
+      </div>
+      
+      <div class="detail-row" *ngIf="data.contribution.notes">
+        <strong>Notes:</strong>
+        <span>{{ data.contribution.notes }}</span>
+      </div>
+    </div>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onClose()">Close</button>
+  </mat-dialog-actions>
+</div>

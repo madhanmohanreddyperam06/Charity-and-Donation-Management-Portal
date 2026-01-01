@@ -21,6 +21,7 @@ import { DonationCreateComponent } from './components/donation-create/donation-c
 import { DonationEditComponent } from './components/donation-edit/donation-edit.component';
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 import { DonationDialogComponent } from './components/donation-dialog/donation-dialog.component';
+import { ContributionDetailsDialogComponent } from './components/contribution-details-dialog/contribution-details-dialog.component';
 // import { NotificationDropdownComponent } from './components/notification-dropdown/notification-dropdown.component';
 
 // Angular Material Modules
@@ -67,7 +68,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     DonationCreateComponent,
     DonationEditComponent,
     AdminDashboardComponent,
-    DonationDialogComponent
+    DonationDialogComponent,
+    ContributionDetailsDialogComponent
     // NotificationDropdownComponent
   ],
   imports: [

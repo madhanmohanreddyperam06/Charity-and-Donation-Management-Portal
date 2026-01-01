@@ -2,7 +2,7 @@
 
 A full-stack web application for managing charity donations and contributions between NGOs and donors.
 
-## Features
+## Features 
 
 - **User Authentication**: Role-based login (NGO/Donor)
 - **Donation Management**: NGOs can create and manage donation requests

@@ -157,3 +157,124 @@
     justify-content: center;
   }
 }
+
+// Payment Details Styles
+.payment-details-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+  
+  .section-title {
+    color: #333;
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  
+  .payment-method-toggle {
+    margin-bottom: 20px;
+    
+    mat-label {
+      display: block;
+      margin-bottom: 12px;
+      color: #666;
+      font-weight: 500;
+    }
+    
+    mat-checkbox {
+      margin-right: 20px;
+      margin-bottom: 8px;
+    }
+  }
+  
+  .payment-card {
+    margin-bottom: 16px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #333;
+    }
+    
+    .bank-fields {
+      mat-form-field {
+        margin-bottom: 12px;
+      }
+    }
+  }
+  
+  .qr-upload-area {
+    .upload-zone {
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #fafafa;
+      
+      &:hover {
+        border-color: var(--primary-color);
+        background: #f5f5f5;
+      }
+      
+      &.drag-over {
+        border-color: var(--primary-color);
+        background: #e3f2fd;
+      }
+      
+      .upload-placeholder {
+        .upload-icon {
+          font-size: 48px;
+          color: #999;
+          margin-bottom: 12px;
+        }
+        
+        p {
+          margin: 8px 0;
+          color: #666;
+          font-weight: 500;
+        }
+        
+        small {
+          color: #999;
+          font-size: 12px;
+          
+          &.file-types {
+            display: block;
+            margin-top: 4px;
+          }
+        }
+      }
+      
+      .qr-preview {
+        position: relative;
+        display: inline-block;
+        
+        .qr-preview-image {
+          max-width: 200px;
+          max-height: 200px;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .remove-qr {
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          background: #f44336;
+          color: white;
+          width: 24px;
+          height: 24px;
+          
+          mat-icon {
+            font-size: 16px;
+          }
+        }
+      }
+    }
+  }
+}

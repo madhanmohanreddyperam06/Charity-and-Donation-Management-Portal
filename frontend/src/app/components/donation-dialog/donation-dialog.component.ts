@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -20,7 +20,15 @@ export class DonationDialogComponent implements OnInit {
   donationForm: FormGroup;
   isLoading = false;
   currentUser: any = null;
+  hidePassword = true;
   
+  // Payment Details Properties
+  showBankDetails: boolean = false;
+  showQrUpload: boolean = false;
+  qrCodePreview: string | null = null;
+  isDragOver: boolean = false;
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
   donationTypes = [
     'food', 'funds', 'clothes', 'education', 'medical', 
     'shelter', 'toys', 'books', 'electronics', 'other'
@@ -43,7 +51,15 @@ export class DonationDialogComponent implements OnInit {
       location: ['', Validators.required],
       pickup_date_time: ['', Validators.required],
       priority: ['medium', Validators.required],
-      description: ['', [Validators.required, Validators.minLength(10)]]
+      description: ['', [Validators.required, Validators.minLength(10)]],
+      // Payment Details
+      accept_bank_payment: [false],
+      accept_qr_payment: [false],
+      bank_account_number: [''],
+      bank_ifsc_code: [''],
+      bank_account_holder: [''],
+      bank_name: [''],
+      qr_code_image: ['']
     });
   }
 
@@ -225,10 +241,10 @@ export class DonationDialogComponent implements OnInit {
 
   getPriorityIcon(priority: string): string {
     switch (priority) {
-      case 'urgent': return 'warning';
-      case 'high': return 'keyboard_arrow_up';
+      case 'urgent': return 'priority_high';
+      case 'high': return 'arrow_upward';
       case 'medium': return 'remove';
-      case 'low': return 'keyboard_arrow_down';
+      case 'low': return 'arrow_downward';
       default: return 'remove';
     }
   }
@@ -240,6 +256,77 @@ export class DonationDialogComponent implements OnInit {
       case 'medium': return 'primary';
       case 'low': return '';
       default: return '';
+    }
+  }
+
+  // Payment Methods
+  onPaymentMethodChange(): void {
+    const acceptBank = this.donationForm.get('accept_bank_payment')?.value;
+    const acceptQr = this.donationForm.get('accept_qr_payment')?.value;
+    
+    this.showBankDetails = acceptBank;
+    this.showQrUpload = acceptQr;
+    
+    // Add/remove validators based on selection
+    const bankFields = ['bank_account_number', 'bank_ifsc_code', 'bank_account_holder', 'bank_name'];
+    bankFields.forEach(field => {
+      const control = this.donationForm.get(field);
+      if (acceptBank) {
+        control?.setValidators([Validators.required]);
+      } else {
+        control?.clearValidators();
+      }
+      control?.updateValueAndValidity();
+    });
+    
+    if (acceptQr) {
+      this.donationForm.get('qr_code_image')?.setValidators([Validators.required]);
+    } else {
+      this.donationForm.get('qr_code_image')?.clearValidators();
+    }
+    this.donationForm.get('qr_code_image')?.updateValueAndValidity();
+  }
+
+  triggerFileInput(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type and size
+      if (!file.type.startsWith('image/')) {
+        this.snackBar.open('Please select an image file', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        return;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        this.snackBar.open('File size must be less than 5MB', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        return;
+      }
+      
+      // Read and preview the image
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.qrCodePreview = e.target?.result as string;
+        this.donationForm.patchValue({ qr_code_image: this.qrCodePreview });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeQrCode(event: Event): void {
+    event.stopPropagation();
+    this.qrCodePreview = null;
+    this.donationForm.patchValue({ qr_code_image: '' });
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
     }
   }
 }

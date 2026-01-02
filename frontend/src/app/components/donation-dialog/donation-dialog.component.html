@@ -109,6 +109,116 @@
           </mat-error>
         </mat-form-field>
       </div>
+
+      <!-- Payment Details Section -->
+      <div class="payment-details-section">
+        <h3 class="section-title">Payment Details</h3>
+        
+        <!-- Payment Method Toggle -->
+        <div class="payment-method-toggle">
+          <mat-label>Accept Payment Methods</mat-label>
+          <mat-checkbox formControlName="accept_bank_payment" (change)="onPaymentMethodChange()">
+            Bank Account Transfer
+          </mat-checkbox>
+          <mat-checkbox formControlName="accept_qr_payment" (change)="onPaymentMethodChange()">
+            QR Code Payment
+          </mat-checkbox>
+        </div>
+
+        <!-- Bank Account Details -->
+        <div class="bank-details-section" *ngIf="showBankDetails">
+          <mat-card class="payment-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>account_balance</mat-icon>
+                Bank Account Details
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="bank-fields">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Account Number</mat-label>
+                  <input matInput formControlName="bank_account_number" placeholder="Enter 16-digit account number">
+                  <mat-icon matPrefix class="input-prefix">credit_card</mat-icon>
+                  <mat-error *ngIf="donationForm.get('bank_account_number')?.hasError('required')">
+                    Account number is required
+                  </mat-error>
+                  <mat-error *ngIf="donationForm.get('bank_account_number')?.hasError('pattern')">
+                    Please enter a valid account number
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>IFSC Code</mat-label>
+                  <input matInput formControlName="bank_ifsc_code" placeholder="Enter 11-digit IFSC code">
+                  <mat-icon matPrefix class="input-prefix">code</mat-icon>
+                  <mat-error *ngIf="donationForm.get('bank_ifsc_code')?.hasError('required')">
+                    IFSC code is required
+                  </mat-error>
+                  <mat-error *ngIf="donationForm.get('bank_ifsc_code')?.hasError('pattern')">
+                    Please enter a valid IFSC code
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Account Holder Name</mat-label>
+                  <input matInput formControlName="bank_account_holder" placeholder="Enter account holder name">
+                  <mat-icon matPrefix class="input-prefix">person</mat-icon>
+                  <mat-error *ngIf="donationForm.get('bank_account_holder')?.hasError('required')">
+                    Account holder name is required
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Bank Name</mat-label>
+                  <input matInput formControlName="bank_name" placeholder="Enter bank name">
+                  <mat-icon matPrefix class="input-prefix">business</mat-icon>
+                  <mat-error *ngIf="donationForm.get('bank_name')?.hasError('required')">
+                    Bank name is required
+                  </mat-error>
+                </mat-form-field>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- QR Code Upload -->
+        <div class="qr-upload-section" *ngIf="showQrUpload">
+          <mat-card class="payment-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon>qr_code_2</mat-icon>
+                QR Code Payment
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="qr-upload-area">
+                <div class="upload-zone" (click)="triggerFileInput()" 
+                     [class.drag-over]="isDragOver" 
+                     (dragover)="isDragOver = true" 
+                     (dragleave)="isDragOver = false">
+                  <input type="file" #fileInput (change)="onFileSelected($event)" 
+                         accept="image/*" style="display: none;">
+                  
+                  <div *ngIf="!qrCodePreview" class="upload-placeholder">
+                    <mat-icon class="upload-icon">cloud_upload</mat-icon>
+                    <p>Click to upload QR code image</p>
+                    <small>or drag and drop</small>
+                    <small class="file-types">PNG, JPG, GIF (Max 5MB)</small>
+                  </div>
+                  
+                  <div *ngIf="qrCodePreview" class="qr-preview">
+                    <img [src]="qrCodePreview" alt="QR Code Preview" class="qr-preview-image">
+                    <button mat-icon-button class="remove-qr" (click)="removeQrCode($event)">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
       
       <!-- Hidden submit button for form submission -->
       <button type="submit" style="display: none;"></button>

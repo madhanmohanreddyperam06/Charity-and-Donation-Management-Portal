@@ -147,7 +147,7 @@
       align-items: center;
       padding: 20px;
       
-      .mock-qr {
+      .real-qr {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -156,10 +156,12 @@
         border-radius: 8px;
         background: #f9f9f9;
         
-        .qr-icon {
-          font-size: 48px;
-          color: #666;
+        .qr-image {
+          width: 200px;
+          height: 200px;
+          border-radius: 8px;
           margin-bottom: 10px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         p {

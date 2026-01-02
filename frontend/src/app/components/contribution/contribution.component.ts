@@ -129,6 +129,12 @@ export class ContributionComponent implements OnInit {
     this.showPaymentDetails = !!event.value;
   }
 
+  onQrImageError(event: any): void {
+    console.log('QR image failed to load, showing fallback');
+    // You could show a fallback QR or error message here
+    event.target.style.display = 'none';
+  }
+
   goBack(): void {
     this.router.navigate(['/donations', this.donationId]);
   }

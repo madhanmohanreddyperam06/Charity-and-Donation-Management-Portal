@@ -93,10 +93,13 @@
                 </mat-card-header>
                 <mat-card-content>
                   <div class="qr-code-container">
-                    <div class="mock-qr">
-                      <mat-icon class="qr-icon">qr_code_2</mat-icon>
-                      <p>Mock QR Code</p>
-                      <small>Scan with any payment app</small>
+                    <div class="real-qr">
+                      <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=charity@bank&pn=CharityFoundation&am=0&cu=INR&aid=1234567890" 
+                           alt="Payment QR Code" 
+                           class="qr-image"
+                           (error)="onQrImageError($event)">
+                      <p>Scan with any payment app</p>
+                      <small>UPI Payment QR Code</small>
                     </div>
                   </div>
                 </mat-card-content>
